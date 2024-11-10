@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:sighttrack_app/screens/capture.dart';
 import 'package:sighttrack_app/screens/home.dart';
 import 'package:sighttrack_app/screens/profile.dart';
 
@@ -14,6 +15,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int selectedIndex = 0;
   static const List<Widget> widgetOptions = <Widget>[
     HomeScreen(),
+    CaptureScreen(),
     ProfileScreen(),
   ];
 
@@ -40,23 +42,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
             },
             tabs: const [
               GButton(icon: Icons.home, text: 'Home'),
+              GButton(icon: Icons.camera_alt, text: 'Capture'),
               GButton(icon: Icons.person, text: 'Profile'),
             ],
           ),
         ),
       ),
     );
-
-    // GNav(
-    //   rippleColor: Colors.grey[300]!,
-    //   hoverColor: Colors.grey[100]!,
-    //   gap: 8,
-    //   activeColor: Colors.redAccent,
-    //   iconSize: 24,
-    //   color: Colors.black,
-    //   tabs: [
-    //     GButton(icon: Icons.home, text: 'Home'),
-    //     GButton(icon: Icons.person, text: 'Profile'),
-    //   ],
   }
 }

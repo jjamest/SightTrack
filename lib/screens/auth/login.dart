@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/screens/auth/signup.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 import '../../components/text_field.dart';
@@ -54,12 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // Pop the loading dialog once the login is successful
       Navigator.pop(context);
 
-      // Remove all routes and push the HomeScreen as the only route
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const CustomNavigationBar()),
-        (route) => false, // This ensures all previous routes are removed
-      );
+      // Instead of manually navigating, let the AuthPage's StreamBuilder handle navigation
+      // Pop back to the AuthPage which will automatically redirect to CustomNavigationBar
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       // Check if the widget is still mounted before doing anything with context
       if (!mounted) return;

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/screens/auth/login.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 import '../../components/text_field.dart';
@@ -63,12 +62,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // Pop the loading dialog once the login is successful
       Navigator.pop(context);
 
-      // Remove all routes and push the HomeScreen as the only route
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const CustomNavigationBar()),
-        (route) => false, // This ensures all previous routes are removed
-      );
+      // Instead of manually navigating, let the AuthPage's StreamBuilder handle navigation
+      // Pop back to the AuthPage which will automatically redirect to CustomNavigationBar
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       // Check if the widget is still mounted before doing anything with context
       if (!mounted) return;
@@ -103,74 +99,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context); // Navigate back to StartPage
-            },
-          ),
-          backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back to StartPage
+          },
         ),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  const Icon(Icons.lock, size: 100),
-                  const SizedBox(height: 50),
-                  Text(
-                    'Sign up for an account',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 25),
-                  CustomTextField(
-                      controller: emailController,
-                      hintText: 'Email',
-                      obscureText: false),
-                  const SizedBox(height: 25),
-                  CustomTextField(
-                      controller: passwordController,
-                      hintText: 'Password',
-                      obscureText: true),
-                  const SizedBox(height: 15),
-                  CustomTextField(
-                      controller: passwordConfirmController,
-                      hintText: 'Confirm Password',
-                      obscureText: true),
-                  const SizedBox(height: 25),
-                  CustomButton(onTap: onSignUpPressed, label: 'Sign Up'),
-                  const SizedBox(height: 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Already a member?',
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                          )),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()));
-                        },
-                        child: const Text('Login instead',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            )),
+        backgroundColor: Colors.transparent,
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 50),
+                const Icon(Icons.lock, size: 100),
+                const SizedBox(height: 50),
+                Text(
+                  'Sign up for an account',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 25),
+                CustomTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false),
+                const SizedBox(height: 25),
+                CustomTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 15),
+                CustomTextField(
+                  controller: passwordConfirmController,
+                  hintText: 'Confirm Password',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 25),
+                CustomButton(onTap: onSignUpPressed, label: 'Sign Up'),
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already a member?',
+                      style: TextStyle(
+                        color: Colors.grey[700],
                       ),
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()));
+                      },
+                      child: const Text(
+                        'Login instead',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

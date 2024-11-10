@@ -45,5 +45,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to show it on the map</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to show it on the map</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera for photo recognition.</string>
 </dict>
 </plist>
