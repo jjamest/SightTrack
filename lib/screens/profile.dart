@@ -13,7 +13,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void onEditProfile() {
     // TODO: Implement edit profile functionality
     showErrorMessage(
-        context, "Edit profile functionality is not implemented yet");
+      context,
+      "Edit profile functionality is not implemented yet",
+    );
   }
 
   @override

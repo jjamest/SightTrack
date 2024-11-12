@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,20 +13,33 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late GoogleMapController mapController;
-  String? mapStyle;
+  late String mapStyle;
   late LatLng currentLocation;
   bool isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getLocation();
-    loadMapStyle();
-  }
+  Future<void> getLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, display an alert to the user.
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+    }
 
-  getLocation() async {
-    await Geolocator.requestPermission();
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are permanently denied, handle this by guiding the user to app settings.
+      openAppSettings();
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
 
+    // If permissions are granted, get the current location.
     Position position = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.best,
@@ -48,6 +62,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getLocation();
+    loadMapStyle();
   }
 
   @override

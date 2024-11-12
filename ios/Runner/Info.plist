@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Sighttrack App</string>
+	<string>SightTrack</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,11 +45,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to show it on the map</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We need your location to show it on the map</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera for photo recognition.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need to access microphone for video audio.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need access to your location to show your position on the map.</string>
 </dict>
 </plist>
