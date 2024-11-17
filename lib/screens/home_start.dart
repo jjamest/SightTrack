@@ -83,7 +83,6 @@ class HomeStartState extends State<HomeStart> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          // TODO: add Image widget for app logo
           Center(
             child: Text(
               displayedText,

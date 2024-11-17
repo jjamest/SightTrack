@@ -1,5 +1,5 @@
 name: sighttrack_app
-description: "A new Flutter project."
+description: "Track your environment"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: ^3.5.4
@@ -43,6 +43,9 @@ dependencies:
   flutter_aws_s3_client: ^0.6.0
   http_parser: ^4.0.2
   logger: ^2.4.0
+  aws_dynamodb_api: ^2.0.0
+  aws_sdk_flutter: ^0.0.1-dev.1
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

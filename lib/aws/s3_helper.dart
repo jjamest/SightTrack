@@ -28,10 +28,10 @@ Future<Map<String, dynamic>> getPresignedURL() async {
   }
 }
 
-Future<List<dynamic>?> uploadImageToS3(Uint8List imageBytes) async {
+Future<List<dynamic>?> uploadImageToS3(
+    Map<String, dynamic> presignedData, Uint8List imageBytes) async {
   try {
     // Step 1: Get the pre-signed URL and fields
-    final presignedData = await getPresignedURL();
     final String url = presignedData['url'];
     final Map<String, dynamic> fields =
         Map<String, dynamic>.from(presignedData['fields']);
@@ -60,7 +60,7 @@ Future<List<dynamic>?> uploadImageToS3(Uint8List imageBytes) async {
     final response = await request.send();
 
     if (response.statusCode == 204) {
-      logger.i('Image uploaded');
+      logger.i('Image uploaded as $objectKey');
 
       // Proceed to get labels from the uploaded image
       List<dynamic>? labels = await getLabelsFromAPI(objectKey);

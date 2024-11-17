@@ -1,8 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:sighttrack_app/aws/dynamo_helper.dart';
 import 'package:sighttrack_app/aws/s3_helper.dart';
+import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/screens/capture/review_upload.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
@@ -42,8 +46,12 @@ class _CaptureScreenState extends State<CaptureScreen> {
       final XFile image = await controller.takePicture();
       Uint8List imageBytes = await image.readAsBytes();
 
-      // Temp for setting state since setState should not have async attribute
-      List<dynamic>? temp = await uploadImageToS3(imageBytes);
+      // Step 1: Get presigned URL to upload imamge
+      final presignedData = await getPresignedURL();
+
+      // Step 2: Upload image to S3
+      List<dynamic>? temp = await uploadImageToS3(presignedData, imageBytes);
+
       setState(() {
         labels = temp;
         isLoading = false; // Hide loading screen
@@ -51,9 +59,40 @@ class _CaptureScreenState extends State<CaptureScreen> {
       });
 
       if (!mounted) return;
+
       if (labels == null) {
         showErrorMessage(context, "Bad photo, try again!");
       } else {
+        // Get current user ID from Firebase
+        final userId = FirebaseAuth.instance.currentUser?.uid;
+        if (userId == null) {
+          showErrorMessage(context, "User not logged in.");
+          return;
+        }
+
+        // Get user position via Geolocator
+        Position position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.best,
+          ),
+        );
+
+        // Step 3: Create Photomarker object with metadata
+        final photoMarker = PhotoMarker(
+          photoId: presignedData['object_key'],
+          userId: userId,
+          time: DateTime.now(),
+          latitude: position.latitude,
+          longitude: position.longitude,
+          imageUrl: presignedData['url'],
+          description: 'A photo description',
+        );
+
+        // Step 4: Save photo metadata to DynamoDB via API Gateway (Lambda)
+        await savePhotoMetadata(photoMarker);
+
+        // Step 5: Navigate to review uplaod screen
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
