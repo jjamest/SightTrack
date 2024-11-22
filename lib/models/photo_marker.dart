@@ -17,31 +17,27 @@ class PhotoMarker {
     this.description,
   });
 
-  // Convert a PhotoMarker object to a map (used for API requests)
+  factory PhotoMarker.fromMap(Map<String, dynamic> map) {
+    return PhotoMarker(
+      photoId: map['photoId'] ?? '',
+      userId: map['userId'] ?? '',
+      time: DateTime.parse(map['time'] ?? DateTime.now().toIso8601String()),
+      latitude: double.parse(map['latitude'].toString()),
+      longitude: double.parse(map['longitude'].toString()),
+      imageUrl: map['imageUrl'] ?? '', // Now contains the presigned URL
+      description: map['description'] ?? '',
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'photoId': photoId,
       'userId': userId,
       'time': time.toIso8601String(),
-      'location': {
-        'latitude': latitude,
-        'longitude': longitude,
-      },
+      'latitude': latitude,
+      'longitude': longitude,
       'imageUrl': imageUrl,
       'description': description,
     };
-  }
-
-  // Convert a map (from API response) to a PhotoMarker object
-  factory PhotoMarker.fromMap(Map<String, dynamic> map) {
-    return PhotoMarker(
-      photoId: map['photoId'],
-      userId: map['userId'],
-      time: DateTime.parse(map['time']),
-      latitude: map['location']['latitude'],
-      longitude: map['location']['longitude'],
-      imageUrl: map['imageUrl'],
-      description: map['description'],
-    );
   }
 }

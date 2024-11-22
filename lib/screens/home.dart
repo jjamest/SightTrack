@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/models/photo_marker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   late String mapStyle;
   late LatLng currentLocation;
   bool isLoading = true;
+
+  Set<Marker> markers = {};
+
+  final Logger logger = Logger();
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -57,18 +64,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadMapStyle() async {
     mapStyle = await rootBundle.loadString('assets/map_style.json');
-    setState(() {});
+  }
+
+  void showMarkerInfo(PhotoMarker photoMarker) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(photoMarker.description ?? 'Photo Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.network(photoMarker.imageUrl),
+            const SizedBox(height: 8),
+            Text('Time: ${photoMarker.time.toLocal()}'),
+            Text('User ID: ${photoMarker.userId}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> loadMarkers() async {
+    try {
+      List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
+
+      logger.i('Loaded ${photoMarkers.length} markers from API');
+
+      Set<Marker> newMarkers = photoMarkers.map((photoMarker) {
+        return Marker(
+          markerId: MarkerId(photoMarker.photoId),
+          position: LatLng(photoMarker.latitude, photoMarker.longitude),
+          infoWindow: InfoWindow(
+            title: photoMarker.description ?? 'Photo',
+            snippet: photoMarker.time.toLocal().toString(),
+          ),
+          onTap: () {
+            showMarkerInfo(photoMarker);
+          },
+        );
+      }).toSet();
+
+      setState(() {
+        markers = newMarkers;
+      });
+    } catch (e) {
+      logger.e('Error loading markers: $e');
+    }
   }
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
+  void initialize() async {
+    await getLocation();
+    await loadMapStyle();
+    await loadMarkers();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    getLocation();
-    loadMapStyle();
+    initialize();
   }
 
   @override
@@ -84,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               myLocationEnabled: true,
               compassEnabled: false,
+              markers: markers,
               style: mapStyle,
             ),
     );

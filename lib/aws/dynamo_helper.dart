@@ -23,8 +23,6 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
       'description': photoMarker.description,
     };
 
-    logger.d('Request payload: $requestPayload');
-
     // Make the POST request to API Gateway
     final response = await http.post(
       Uri.parse(saveApiUrl),
@@ -49,16 +47,9 @@ Future<List<PhotoMarker>> getMarkersFromAPI() async {
 
   if (response.statusCode == 200) {
     final List<dynamic> markersData = json.decode(response.body);
+
     return markersData.map((data) {
-      return PhotoMarker(
-        photoId: data['photoId'],
-        userId: data['userId'],
-        time: DateTime.parse(data['time']),
-        latitude: data['location']['latitude'],
-        longitude: data['location']['longitude'],
-        imageUrl: data['imageUrl'],
-        description: data['description'],
-      );
+      return PhotoMarker.fromMap(data);
     }).toList();
   } else {
     throw Exception('Failed to load photo markers');
