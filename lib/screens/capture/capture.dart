@@ -4,7 +4,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sighttrack_app/aws/dynamo_helper.dart';
 import 'package:sighttrack_app/aws/s3_helper.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/screens/capture/review_upload.dart';
@@ -85,11 +84,11 @@ class _CaptureScreenState extends State<CaptureScreen> {
           latitude: position.latitude,
           longitude: position.longitude,
           imageUrl: presignedData['url'],
-          description: 'A photo description',
+          label: '',
+          // description: 'A photo description',
         );
 
-        // Step 4: Save photo metadata to DynamoDB via API Gateway (Lambda)
-        await savePhotoMetadata(photoMarker);
+        // Step 4 moved to review_upload.dart
 
         // Step 5: Navigate to review uplaod screen
         if (!mounted) return;
@@ -99,6 +98,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
             builder: (context) => ReviewUploadScreen(
               labels: labels!,
               image: image,
+              photoMarker: photoMarker,
             ),
           ),
         );

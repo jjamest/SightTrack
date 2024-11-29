@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.0.0+1
+version: 2.1.0+1
 
 environment:
   sdk: ^3.5.4
@@ -46,6 +46,12 @@ dependencies:
   aws_dynamodb_api: ^2.0.0
   aws_sdk_flutter: ^0.0.1-dev.1
   path: ^1.9.0
+  flutter_launcher_icons: ^0.14.1
+  intl: ^0.19.0
+
+flutter_icons:
+  image_path: "assets/icon.jpg"
+  ios: true
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +81,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/map_style.json
+    - assets/terms.txt
+    - assets/privacy.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import 'package:sighttrack_app/components/text_link.dart';
+import 'package:sighttrack_app/screens/info/faq.dart';
+import 'package:sighttrack_app/screens/info/privacy.dart';
+import 'package:sighttrack_app/screens/info/terms.dart';
+import 'package:sighttrack_app/screens/profile/edit_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,9 +15,30 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   void onEditProfile() {
-    showErrorMessage(
+    Navigator.push(
       context,
-      "Edit profile functionality is not implemented yet",
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    );
+  }
+
+  void onPressFAQ() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FAQScreen()),
+    );
+  }
+
+  void onPressTerms() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TermsAndConditionsScreen()),
+    );
+  }
+
+  void onPressPrivacy() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
     );
   }
 
@@ -40,6 +65,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
+            const SizedBox(height: 20),
+            CustomTextLink(text: "FAQ", onPressed: onPressFAQ),
+            const SizedBox(height: 10),
+            CustomTextLink(text: "Terms & Conditions", onPressed: onPressTerms),
+            const SizedBox(height: 10),
+            CustomTextLink(text: "Privacy Policy", onPressed: onPressPrivacy),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: onEditProfile,

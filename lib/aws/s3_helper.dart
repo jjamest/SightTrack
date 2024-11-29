@@ -3,13 +3,11 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:sighttrack_app/logging.dart';
+import 'package:sighttrack_app/settings.dart';
 
 Future<Map<String, dynamic>> getPresignedURL() async {
-  const String apiUrl =
-      'https://i6683l9uod.execute-api.us-east-1.amazonaws.com/prod/get-presigned-url';
-
   try {
-    final response = await http.get(Uri.parse(apiUrl));
+    final response = await http.get(Uri.parse(ApiConstants.s3getPresignedURL));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -75,12 +73,9 @@ Future<List<dynamic>?> uploadImageToS3(
 }
 
 Future<List<dynamic>?> getLabelsFromAPI(String objectKey) async {
-  const String apiUrl =
-      'https://i6683l9uod.execute-api.us-east-1.amazonaws.com/prod/analyze';
-
   try {
     final response = await http.post(
-      Uri.parse(apiUrl),
+      Uri.parse(ApiConstants.rekognitionURL),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'object_key': objectKey}),
     );

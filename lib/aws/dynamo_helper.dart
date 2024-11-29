@@ -3,11 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:sighttrack_app/logging.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
-
-const String saveApiUrl =
-    "https://ry9z08o9pd.execute-api.us-east-1.amazonaws.com/prod/savePhotoMetadata";
-const String retrieveApiUrl =
-    "https://ry9z08o9pd.execute-api.us-east-1.amazonaws.com/prod/getPhotoMarkers";
+import 'package:sighttrack_app/settings.dart';
 
 Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
   try {
@@ -25,7 +21,7 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
 
     // Make the POST request to API Gateway
     final response = await http.post(
-      Uri.parse(saveApiUrl),
+      Uri.parse(ApiConstants.dynamoSaveURL),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(requestPayload),
     );
@@ -43,7 +39,7 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
 }
 
 Future<List<PhotoMarker>> getMarkersFromAPI() async {
-  final response = await http.get(Uri.parse(retrieveApiUrl));
+  final response = await http.get(Uri.parse(ApiConstants.dynamoRetrieveURL));
 
   if (response.statusCode == 200) {
     final List<dynamic> markersData = json.decode(response.body);

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sighttrack_app/screens/capture/capture.dart';
 import 'package:sighttrack_app/screens/home.dart';
-import 'package:sighttrack_app/screens/profile.dart';
+import 'package:sighttrack_app/screens/profile/profile.dart';
 
 class CustomNavigationBar extends StatefulWidget {
   const CustomNavigationBar({super.key});

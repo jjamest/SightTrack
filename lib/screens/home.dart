@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sighttrack_app/aws/dynamo_helper.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         // Permissions are denied, display an alert to the user.
+        if (!mounted) return;
         setState(() {
           isLoading = false;
         });
@@ -40,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (permission == LocationPermission.deniedForever) {
       // Permissions are permanently denied, handle this by guiding the user to app settings.
       openAppSettings();
+
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -56,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double long = position.longitude;
     LatLng location = LatLng(lat, long);
 
+    if (!mounted) return;
     setState(() {
       currentLocation = location;
       isLoading = false;
@@ -70,13 +75,18 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(photoMarker.description ?? 'Photo Details'),
+        title: Text(
+          photoMarker.description!.isEmpty
+              ? 'Untitled capture'
+              : photoMarker.description!,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.network(photoMarker.imageUrl),
             const SizedBox(height: 8),
-            Text('Time: ${photoMarker.time.toLocal()}'),
+            Text(
+                'Time: ${DateFormat('yyyy-MM-dd').format(photoMarker.time.toLocal())}'),
             Text('User ID: ${photoMarker.userId}'),
           ],
         ),
@@ -110,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }).toSet();
 
+      if (!mounted) return;
       setState(() {
         markers = newMarkers;
       });
@@ -126,6 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
     await getLocation();
     await loadMapStyle();
     await loadMarkers();
+
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });

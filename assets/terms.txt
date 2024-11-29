@@ -1,0 +1,55 @@
+Terms and Conditions
+Effective Date: November 28, 2024
+
+Welcome to SightTrack! These Terms and Conditions govern your access to and use of the SightTrack mobile application (the "App") and the services provided therein (collectively, the "Service"). By downloading, installing, or using the App, you agree to comply with and be bound by these Terms. If you do not agree, you may not use the Service.
+
+1. Acceptance of Terms
+By using the Service, you agree to be legally bound by these Terms. If you are under 18, you represent that your legal guardian has reviewed and agreed to these Terms on your behalf.
+
+2. Description of the Service
+SightTrack allows users to:
+
+Upload photos of animals, plants, or other organisms to contribute to a global biodiversity tracking database.
+View uploads on a world map to explore biodiversity in various regions.
+Share and discover insights about biodiversity within your community.
+3. User Accounts
+You must create an account to use certain features of the App.
+You are responsible for maintaining the confidentiality of your account credentials and are liable for all activities that occur under your account.
+You must provide accurate and up-to-date information when registering.
+4. User Content
+By uploading photos or other content ("User Content") to the App, you grant SightTrack a non-exclusive, worldwide, royalty-free, transferable, sublicensable license to use, display, reproduce, distribute, and modify your content for the purpose of providing and improving the Service.
+You represent and warrant that you own or have the necessary rights to upload the User Content and that it does not infringe on any third-party rights.
+SightTrack reserves the right to remove any User Content at its sole discretion.
+5. Privacy
+Your privacy is important to us. Please refer to our [Privacy Policy] for details about how we collect, use, and disclose your information.
+SightTrack may collect and share anonymized location data to enhance the accuracy and utility of biodiversity tracking.
+6. Prohibited Activities
+You agree not to:
+
+Upload content that is unlawful, offensive, harmful, or infringes on the rights of others.
+Misrepresent your identity or affiliation with any person or organization.
+Use the App for commercial purposes without prior written consent from SightTrack.
+Attempt to disrupt or harm the functionality of the App or Service.
+7. Map and Global Data
+The map feature displays biodiversity data uploaded by users globally. While we strive to maintain the accuracy of this data, we do not guarantee its completeness or reliability.
+Please respect the privacy and property of others when exploring biodiversity in real-world locations.
+8. Intellectual Property
+All rights, titles, and interests in the Service, including the App’s design, functionality, and content (excluding User Content), are owned by SightTrack or its licensors.
+You may not reproduce, distribute, or create derivative works based on the Service without prior written permission.
+9. Third-Party Services
+The Service may contain links to third-party websites or services. SightTrack is not responsible for the content or practices of these third parties.
+
+10. Disclaimer of Warranties
+The Service is provided "as is" and "as available" without any warranties, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. SightTrack does not guarantee the accuracy or reliability of biodiversity data.
+
+11. Limitation of Liability
+SightTrack shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, including but not limited to loss of data, loss of profits, or personal injury.
+
+12. Termination
+SightTrack reserves the right to suspend or terminate your access to the Service at any time, with or without cause or notice.
+
+13. Governing Law
+These Terms shall be governed by and construed in accordance with the laws of [Insert Jurisdiction], without regard to its conflict of laws principles.
+
+14. Changes to the Terms
+SightTrack reserves the right to modify these Terms at any time. If changes are made, we will notify you by updating the "Effective Date" at the top of this page. Your continued use of the Service after any changes constitutes acceptance of the new Terms.

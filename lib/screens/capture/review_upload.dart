@@ -2,13 +2,22 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/components/button.dart';
+import 'package:sighttrack_app/components/text_box.dart';
+import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/screens/capture/upload_complete.dart';
 
 class ReviewUploadScreen extends StatefulWidget {
   const ReviewUploadScreen(
-      {super.key, required this.labels, required this.image});
+      {super.key,
+      required this.labels,
+      required this.image,
+      required this.photoMarker});
 
   final List<dynamic> labels;
   final XFile image;
+  final PhotoMarker photoMarker;
 
   @override
   State<ReviewUploadScreen> createState() => _ReviewUploadScreenState();
@@ -16,6 +25,32 @@ class ReviewUploadScreen extends StatefulWidget {
 
 class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
   String? selectedLabel;
+  bool isLoading = false;
+  final TextEditingController descriptionController = TextEditingController();
+
+  void onUpload() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // Update photoMarker instance
+    widget.photoMarker.label = selectedLabel!;
+    widget.photoMarker.description = descriptionController.text;
+
+    await savePhotoMetadata(widget.photoMarker);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const UploadCompleteScreen(),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -39,7 +74,7 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
         ),
-        title: const Text("Preview your upload"),
+        title: const Text('Review your upload'),
       ),
       body: SingleChildScrollView(
         // Wrap the body in a scroll view for better usability
@@ -53,7 +88,7 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
                   children: [
                     // Styled explanatory text
                     Text(
-                      'Select the animal',
+                      'Describe your photo',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -105,9 +140,30 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
                           },
                         ),
                       ),
+                    const SizedBox(height: 30),
+                    CustomTextBox(
+                        label: 'Description',
+                        hintText: 'Enter your description here...',
+                        controller: descriptionController),
                   ],
                 ),
               ),
+              const SizedBox(height: 30),
+
+              isLoading
+                  ? const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(), // Loading spinner
+                        SizedBox(height: 20),
+                        Text(
+                          "Uploading...",
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      ],
+                    )
+                  : CustomButton(onTap: onUpload, label: 'Upload Image'),
+
               const SizedBox(height: 30),
               // Displaying the image
               Image.file(
