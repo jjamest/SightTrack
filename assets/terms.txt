@@ -12,17 +12,21 @@ SightTrack allows users to:
 Upload photos of animals, plants, or other organisms to contribute to a global biodiversity tracking database.
 View uploads on a world map to explore biodiversity in various regions.
 Share and discover insights about biodiversity within your community.
+
 3. User Accounts
 You must create an account to use certain features of the App.
 You are responsible for maintaining the confidentiality of your account credentials and are liable for all activities that occur under your account.
 You must provide accurate and up-to-date information when registering.
+
 4. User Content
 By uploading photos or other content ("User Content") to the App, you grant SightTrack a non-exclusive, worldwide, royalty-free, transferable, sublicensable license to use, display, reproduce, distribute, and modify your content for the purpose of providing and improving the Service.
 You represent and warrant that you own or have the necessary rights to upload the User Content and that it does not infringe on any third-party rights.
 SightTrack reserves the right to remove any User Content at its sole discretion.
+
 5. Privacy
 Your privacy is important to us. Please refer to our [Privacy Policy] for details about how we collect, use, and disclose your information.
 SightTrack may collect and share anonymized location data to enhance the accuracy and utility of biodiversity tracking.
+
 6. Prohibited Activities
 You agree not to:
 
@@ -30,12 +34,15 @@ Upload content that is unlawful, offensive, harmful, or infringes on the rights 
 Misrepresent your identity or affiliation with any person or organization.
 Use the App for commercial purposes without prior written consent from SightTrack.
 Attempt to disrupt or harm the functionality of the App or Service.
+
 7. Map and Global Data
 The map feature displays biodiversity data uploaded by users globally. While we strive to maintain the accuracy of this data, we do not guarantee its completeness or reliability.
 Please respect the privacy and property of others when exploring biodiversity in real-world locations.
+
 8. Intellectual Property
 All rights, titles, and interests in the Service, including the App’s design, functionality, and content (excluding User Content), are owned by SightTrack or its licensors.
 You may not reproduce, distribute, or create derivative works based on the Service without prior written permission.
+
 9. Third-Party Services
 The Service may contain links to third-party websites or services. SightTrack is not responsible for the content or practices of these third parties.
 

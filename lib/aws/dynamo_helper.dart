@@ -44,6 +44,7 @@ Future<List<PhotoMarker>> getMarkersFromAPI() async {
   if (response.statusCode == 200) {
     final List<dynamic> markersData = json.decode(response.body);
 
+    logger.i('Loaded ${markersData.length} markers from API');
     return markersData.map((data) {
       return PhotoMarker.fromMap(data);
     }).toList();

@@ -7,6 +7,8 @@ import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sighttrack_app/aws/dynamo_helper.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/screens/upload_gallery.dart';
+import 'package:sighttrack_app/util/graphics.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,17 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadMarkers() async {
     try {
       List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
-
-      logger.i('Loaded ${photoMarkers.length} markers from API');
+      final Uint8List? icon = await getBytesFromAsset('assets/marker.png', 48);
 
       Set<Marker> newMarkers = photoMarkers.map((photoMarker) {
         return Marker(
           markerId: MarkerId(photoMarker.photoId),
           position: LatLng(photoMarker.latitude, photoMarker.longitude),
-          infoWindow: InfoWindow(
-            title: photoMarker.description ?? 'Photo',
-            snippet: photoMarker.time.toLocal().toString(),
-          ),
+          icon: BitmapDescriptor.bytes(icon!),
           onTap: () {
             showMarkerInfo(photoMarker);
           },
@@ -134,9 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void initialize() async {
+    await loadMarkers();
     await getLocation();
     await loadMapStyle();
-    await loadMarkers();
 
     if (!mounted) return;
     setState(() {
@@ -153,19 +151,44 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              onMapCreated: onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: currentLocation,
-                zoom: 14.0,
+      body: Stack(
+        children: [
+          Container(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : GoogleMap(
+                    onMapCreated: onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                      target: currentLocation,
+                      zoom: 14.0,
+                    ),
+                    myLocationEnabled: true,
+                    compassEnabled: false,
+                    markers: markers,
+                    style: mapStyle,
+                  ),
+          ),
+          Positioned(
+            top: 50.0, // Adjust for your app bar or safe area
+            left: 20.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UploadGalleryScreen()),
+                );
+              },
+              backgroundColor: Colors.teal,
+              elevation: 4.0,
+              child: const Icon(
+                Icons.photo_library,
+                color: Colors.white,
               ),
-              myLocationEnabled: true,
-              compassEnabled: false,
-              markers: markers,
-              style: mapStyle,
             ),
+          ),
+        ],
+      ),
     );
   }
 }

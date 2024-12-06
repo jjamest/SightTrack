@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.1.0+1
+version: 2.1.0+2
 
 environment:
   sdk: ^3.5.4
@@ -30,24 +30,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+
   firebase_core: ^3.7.0
   firebase_auth: ^5.3.2
+  http: ^1.2.2
+  logger: ^2.4.0
   google_nav_bar: ^5.0.7
   google_maps_flutter: ^2.9.0
-  geolocator: ^13.0.1
+  geolocator: ^13.0.2
   camera: ^0.11.0+2
   permission_handler: ^11.3.1
-  aws_sdk: ^0.0.3
-  http: ^0.13.6
-  flutter_aws_s3_client: ^0.6.0
-  http_parser: ^4.0.2
-  logger: ^2.4.0
-  aws_dynamodb_api: ^2.0.0
-  aws_sdk_flutter: ^0.0.1-dev.1
-  path: ^1.9.0
   flutter_launcher_icons: ^0.14.1
-  intl: ^0.19.0
+  intl: ^0.20.1
+  # amplify_flutter: ^2.5.0
+  # amplify_auth_cognito: ^2.5.0
 
 flutter_icons:
   image_path: "assets/icon.jpg"
@@ -62,7 +58,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -83,6 +79,7 @@ flutter:
     - assets/map_style.json
     - assets/terms.txt
     - assets/privacy.txt
+    - assets/marker.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

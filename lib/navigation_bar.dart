@@ -14,9 +14,9 @@ class CustomNavigationBar extends StatefulWidget {
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int selectedIndex = 0;
+  bool doneInitializing = false;
   late List<Widget> widgetOptions;
   late CameraDescription camera;
-  bool doneInitializing = false;
 
   Future<void> initializeElements() async {
     final cameras = await availableCameras();
