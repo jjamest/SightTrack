@@ -11,12 +11,28 @@ class UploadGalleryScreen extends StatefulWidget {
 
 class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
   final List<String> imageUrls = [];
+  bool isLoading = true;
 
   void initialize() async {
-    List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
-    for (int i = 0; i < photoMarkers.length; i++) {
+    try {
+      // Fetch photo markers from API
+      List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
+
+      // Sort photom markers by date
+      photoMarkers.sort((a, b) => b.time.compareTo(a.time));
+
+      // Extract URLs
+      final urls = photoMarkers.map((marker) => marker.imageUrl).toList();
+      if (!mounted) return;
       setState(() {
-        imageUrls.add(photoMarkers[i].imageUrl);
+        imageUrls.addAll(urls);
+        isLoading = false; // Mark as loaded
+      });
+    } catch (e) {
+      debugPrint('Error loading images: $e');
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -33,33 +49,54 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
       appBar: AppBar(
         title: const Text("Recent Uploads"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Number of columns
-            crossAxisSpacing: 8.0, // Spacing between columns
-            mainAxisSpacing: 8.0, // Spacing between rows
-            childAspectRatio: 1.0, // Aspect ratio of grid items
-          ),
-          itemCount: imageUrls.length,
-          itemBuilder: (context, index) {
-            return Card(
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Image.network(
-                  imageUrls[index],
-                  fit: BoxFit.cover,
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator()) // Loading indicator
+          : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Number of columns
+                  crossAxisSpacing: 8.0, // Spacing between columns
+                  mainAxisSpacing: 8.0, // Spacing between rows
+                  childAspectRatio: 1.0, // Aspect ratio of grid items
                 ),
+                itemCount: imageUrls.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: Image.network(
+                        imageUrls[index],
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child; // Image loaded
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(Icons.error, color: Colors.red),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 }

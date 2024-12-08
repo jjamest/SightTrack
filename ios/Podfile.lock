@@ -1,37 +1,13 @@
 PODS:
+  - amplify_auth_cognito (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - amplify_secure_storage (0.0.1):
+    - Flutter
   - camera_avfoundation (0.0.1):
     - Flutter
-  - Firebase/Auth (11.4.0):
-    - Firebase/CoreOnly
-    - FirebaseAuth (~> 11.4.0)
-  - Firebase/CoreOnly (11.4.0):
-    - FirebaseCore (= 11.4.0)
-  - firebase_auth (5.3.4):
-    - Firebase/Auth (= 11.4.0)
-    - firebase_core
+  - device_info_plus (0.0.1):
     - Flutter
-  - firebase_core (3.8.1):
-    - Firebase/CoreOnly (= 11.4.0)
-    - Flutter
-  - FirebaseAppCheckInterop (11.4.0)
-  - FirebaseAuth (11.4.0):
-    - FirebaseAppCheckInterop (~> 11.0)
-    - FirebaseAuthInterop (~> 11.0)
-    - FirebaseCore (~> 11.4)
-    - FirebaseCoreExtension (~> 11.4)
-    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GTMSessionFetcher/Core (< 5.0, >= 3.4)
-    - RecaptchaInterop (~> 100.0)
-  - FirebaseAuthInterop (11.4.0)
-  - FirebaseCore (11.4.0):
-    - FirebaseCoreInternal (~> 11.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreExtension (11.4.1):
-    - FirebaseCore (~> 11.0)
-  - FirebaseCoreInternal (11.4.2):
-    - "GoogleUtilities/NSData+zlib (~> 8.0)"
   - Flutter (1.0.0)
   - geolocator_apple (1.2.0):
     - Flutter
@@ -46,93 +22,73 @@ PODS:
   - GoogleMaps/Base (9.1.1)
   - GoogleMaps/Maps (9.1.1):
     - GoogleMaps/Base
-  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Network
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Environment (8.0.2):
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.0.2):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (8.0.2):
-    - GoogleUtilities/Logger
-    - "GoogleUtilities/NSData+zlib"
-    - GoogleUtilities/Privacy
-    - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (8.0.2)":
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.0.2)
-  - GoogleUtilities/Reachability (8.0.2):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
-  - GTMSessionFetcher/Core (4.1.0)
+  - package_info_plus (0.4.5):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - permission_handler_apple (9.3.0):
     - Flutter
-  - RecaptchaInterop (100.0.0)
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
+  - amplify_auth_cognito (from `.symlinks/plugins/amplify_auth_cognito/darwin`)
+  - amplify_secure_storage (from `.symlinks/plugins/amplify_secure_storage/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
-  - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
-  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - GoogleMaps
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
-    - Firebase
-    - FirebaseAppCheckInterop
-    - FirebaseAuth
-    - FirebaseAuthInterop
-    - FirebaseCore
-    - FirebaseCoreExtension
-    - FirebaseCoreInternal
     - Google-Maps-iOS-Utils
     - GoogleMaps
-    - GoogleUtilities
-    - GTMSessionFetcher
-    - RecaptchaInterop
 
 EXTERNAL SOURCES:
+  amplify_auth_cognito:
+    :path: ".symlinks/plugins/amplify_auth_cognito/darwin"
+  amplify_secure_storage:
+    :path: ".symlinks/plugins/amplify_secure_storage/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
-  firebase_auth:
-    :path: ".symlinks/plugins/firebase_auth/ios"
-  firebase_core:
-    :path: ".symlinks/plugins/firebase_core/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/ios"
   google_maps_flutter_ios:
     :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  amplify_auth_cognito: b76a0e367489da2b9a3c6e5a8ec74a72a0a7cc2f
+  amplify_secure_storage: ede2a5027299bab196b8baa030ed3f4cf50ce9a9
   camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
-  Firebase: cf1b19f21410b029b6786a54e9764a0cacad3c99
-  firebase_auth: c4bdd9d7b338ac004008cb5024a643584e0ec03f
-  firebase_core: 418aed674e9a0b8b6088aec16cde82a811f6261f
-  FirebaseAppCheckInterop: 1b9643ae2f1ee214488caa2f8e32b7bc2f0f3735
-  FirebaseAuth: c359af98bd703cbf4293eec107a40de08ede6ce6
-  FirebaseAuthInterop: 9ac948965ac13ec9d8a080f39490ddb2bda30520
-  FirebaseCore: e0510f1523bc0eb21653cac00792e1e2bd6f1771
-  FirebaseCoreExtension: f1bc67a4702931a7caa097d8e4ac0a1b0d16720e
-  FirebaseCoreInternal: 35731192cab10797b88411be84940d2beb33a238
+  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   geolocator_apple: 9bcea1918ff7f0062d98345d238ae12718acfbc1
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   google_maps_flutter_ios: e31555a04d1986ab130f2b9f24b6cdc861acc6d3
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
-  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  GTMSessionFetcher: 923b710231ad3d6f3f0495ac1ced35421e07d9a6
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-  RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: fd7127bf6a6b623c045fd675fdae5af8e4d8c346
 

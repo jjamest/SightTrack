@@ -54,9 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // If permissions are granted, get the current location.
     Position position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
-      ),
+      desiredAccuracy: LocationAccuracy.best,
     );
     double lat = position.latitude;
     double long = position.longitude;
@@ -88,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Image.network(photoMarker.imageUrl),
             const SizedBox(height: 8),
             Text(
-                'Time: ${DateFormat('yyyy-MM-dd').format(photoMarker.time.toLocal())}'),
+                'Date: ${DateFormat('yyyy-MM-dd').format(photoMarker.time.toLocal())}'),
             Text('User ID: ${photoMarker.userId}'),
           ],
         ),
@@ -132,10 +130,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void initialize() async {
-    await loadMarkers();
-    await getLocation();
-    await loadMapStyle();
+    // Run all tasks concurrently
+    await Future.wait([
+      loadMarkers(),
+      getLocation(),
+      loadMapStyle(),
+    ]);
 
+    // After all tasks are complete
     if (!mounted) return;
     setState(() {
       isLoading = false;

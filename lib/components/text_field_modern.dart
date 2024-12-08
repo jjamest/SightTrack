@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomModernTextField extends StatelessWidget {
   final TextEditingController controller;
+  final String labelText;
   final String hintText;
   final bool obscureText;
 
-  const CustomTextField({
+  const CustomModernTextField({
     super.key,
     required this.controller,
+    required this.labelText,
     required this.hintText,
     required this.obscureText,
   });
@@ -28,6 +30,8 @@ class CustomTextField extends StatelessWidget {
           ),
           fillColor: Colors.grey.shade200,
           filled: true,
+          labelText: labelText,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500]),
         ),

@@ -1,0 +1,29 @@
+{
+  "name": "sighttrack_app",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.8.0",
+    "@aws-amplify/backend-cli": "^1.4.2",
+    "aws-cdk": "^2.172.0",
+    "aws-cdk-lib": "^2.172.0",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "aws-amplify": "^6.10.2"
+  }
+}

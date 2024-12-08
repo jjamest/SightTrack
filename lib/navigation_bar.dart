@@ -13,7 +13,7 @@ class CustomNavigationBar extends StatefulWidget {
 }
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
-  int selectedIndex = 0;
+  int selectedIndex = 1;
   bool doneInitializing = false;
   late List<Widget> widgetOptions;
   late CameraDescription camera;

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sighttrack_app/aws/s3_helper.dart';
@@ -63,23 +62,21 @@ class _CaptureScreenState extends State<CaptureScreen> {
         showErrorMessage(context, "Bad photo, try again!");
       } else {
         // Get current user ID from Firebase
-        final userId = FirebaseAuth.instance.currentUser?.uid;
-        if (userId == null) {
-          showErrorMessage(context, "User not logged in.");
-          return;
-        }
+        // final userId = FirebaseAuth.instance.currentUser?.uid;
+        // if (userId == null) {
+        //   showErrorMessage(context, "User not logged in.");
+        //   return;
+        // }
 
         // Get user position via Geolocator
         Position position = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.best,
-          ),
+          desiredAccuracy: LocationAccuracy.best,
         );
 
         // Step 3: Create Photomarker object with metadata
         final photoMarker = PhotoMarker(
           photoId: presignedData['object_key'],
-          userId: userId,
+          userId: "TEST USER ID", // userId,
           time: DateTime.now(),
           latitude: position.latitude,
           longitude: position.longitude,

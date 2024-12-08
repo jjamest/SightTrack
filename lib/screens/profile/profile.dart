@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/components/text_link.dart';
 import 'package:sighttrack_app/screens/info/faq.dart';
 import 'package:sighttrack_app/screens/info/privacy.dart';
 import 'package:sighttrack_app/screens/info/terms.dart';
 import 'package:sighttrack_app/screens/profile/edit_profile.dart';
+import 'package:sighttrack_app/util/error_message.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,6 +15,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? username;
+  String? email;
+
   void onEditProfile() {
     Navigator.push(
       context,
@@ -42,6 +46,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> getCurrentUser() async {
+    try {
+      // Start fetching username and email concurrently
+      final usernameFuture = Amplify.Auth.getCurrentUser();
+      final attributesFuture = Amplify.Auth.fetchUserAttributes();
+
+      // Await the username retrieval
+      usernameFuture.then((user) {
+        setState(() {
+          username = user.username;
+        });
+      }).catchError((e) {
+        if (!mounted) return;
+        showErrorMessage(context, 'Error fetching username: $e');
+      });
+
+      // Await the attributes retrieval and extract email
+      attributesFuture.then((attributes) {
+        final emailAttribute = attributes.firstWhere(
+          (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
+          orElse: () => throw Exception('Email not found'),
+        );
+
+        setState(() {
+          email = emailAttribute.value;
+        });
+      }).catchError((e) {
+        if (!mounted) return;
+        showErrorMessage(context, 'Error fetching email: $e');
+      });
+    } catch (e) {
+      if (!mounted) return;
+      showErrorMessage(context, 'Error: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +101,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              FirebaseAuth.instance.currentUser!.email ??
-                  'Loading email please wait...',
+              username ?? 'Loading...',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
-            const Text(
-              'Bio or other user details here', // Replace with user's bio or other info
+            Text(
+              email ?? 'Loading...', // Replace with user's bio or other info
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
@@ -77,9 +122,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Text('Edit Profile'),
             ),
             const SizedBox(height: 20),
+            // SignOutButton()
             ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
+              onPressed: () async {
+                await Amplify.Auth.signOut();
               },
               child: const Text('Logout'),
             ),
