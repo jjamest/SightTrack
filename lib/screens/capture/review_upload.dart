@@ -4,9 +4,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/aws/dynamo_helper.dart';
 import 'package:sighttrack_app/components/button.dart';
+import 'package:sighttrack_app/components/success.dart';
 import 'package:sighttrack_app/components/text_box.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
-import 'package:sighttrack_app/screens/capture/upload_complete.dart';
+import 'package:sighttrack_app/navigation_bar.dart';
 
 class ReviewUploadScreen extends StatefulWidget {
   const ReviewUploadScreen(
@@ -47,7 +48,10 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const UploadCompleteScreen(),
+        builder: (context) => SuccessScreen(
+            text: 'Upload Complete!',
+            subText: 'Your file has been successfully uploaded.',
+            destination: const CustomNavigationBar()),
       ),
     );
   }

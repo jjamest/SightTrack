@@ -122,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       logger.e('Error loading markers: $e');
+      loadMarkers();
     }
   }
 

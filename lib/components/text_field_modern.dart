@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomModernTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final String hintText;
-  final bool obscureText;
+  final bool? obscureText;
+  final TextInputType keyboardType; // Add this property
+  final List<TextInputFormatter>? inputFormatters;
+  final TextInputAction?
+      textInputAction; // Optional for customizing input actions
+  final ValueChanged<String>? onChanged; // Allow onChanged callback
 
   const CustomModernTextField({
     super.key,
     required this.controller,
     required this.labelText,
     required this.hintText,
-    required this.obscureText,
+    this.obscureText,
+    this.keyboardType = TextInputType.text, // Default to text input
+    this.inputFormatters,
+    this.textInputAction,
+    this.onChanged,
   });
 
   @override
@@ -19,8 +29,12 @@ class CustomModernTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: TextField(
-        obscureText: obscureText,
+        obscureText: obscureText ?? false,
         controller: controller,
+        keyboardType: keyboardType, // Use the keyboardType property
+        inputFormatters: inputFormatters, // Apply input formatters
+        textInputAction: textInputAction, // Pass textInputAction if provided
+        onChanged: onChanged, // Trigger onChanged if provided
         decoration: InputDecoration(
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),

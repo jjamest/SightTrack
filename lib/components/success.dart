@@ -20,7 +20,6 @@ class SuccessScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Congratulations Logo or Icon
             Container(
               decoration: BoxDecoration(
                 color: Colors.green.shade100, // Subtle background for the logo
@@ -34,8 +33,6 @@ class SuccessScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Upload Complete Text
             Text(
               text,
               style: TextStyle(
@@ -64,7 +61,7 @@ class SuccessScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => destination,
                     ),
-                    (route) => false, // Removes all previous routes
+                    (route) => true, // Removes all previous routes
                   );
                 },
                 label: 'Go Back'),

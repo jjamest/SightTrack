@@ -2,8 +2,12 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/components/button.dart';
 import 'package:sighttrack_app/components/small_button.dart';
+import 'package:sighttrack_app/components/success.dart';
 import 'package:sighttrack_app/components/text_field_modern.dart';
+import 'package:sighttrack_app/logging.dart';
+import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/screens/profile/change_password.dart';
+import 'package:sighttrack_app/screens/profile/confirm_email.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -56,6 +60,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> onSaveChanges() async {
+    try {
+      final result = await Amplify.Auth.updateUserAttribute(
+          userAttributeKey: AuthUserAttributeKey.email,
+          value: emailController.text);
+      handleUpdateUserAttributeResult(result);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      showErrorMessage(context, 'Error updating user attribute: ${e.message}');
+    }
+  }
+
+  void handleUpdateUserAttributeResult(
+    UpdateUserAttributeResult result,
+  ) {
+    switch (result.nextStep.updateAttributeStep) {
+      case AuthUpdateAttributeStep.confirmAttributeWithCode:
+        final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
+        // handleCodeDelivery(codeDeliveryDetails);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfirmEmailScreen(
+                destination: codeDeliveryDetails.destination,
+                deliveryMedium: codeDeliveryDetails.deliveryMedium.name),
+          ),
+        );
+        break;
+      case AuthUpdateAttributeStep.done:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SuccessScreen(
+              text: 'Success',
+              subText: 'Updated email',
+              destination: CustomNavigationBar(),
+            ),
+          ),
+        );
+        logger.d('Successfully updated attribute');
+        break;
+    }
+  }
+
+  // void handleCodeDelivery(AuthCodeDeliveryDetails codeDeliveryDetails) {
+  //   logger.d(
+  //     'A confirmation code has been sent to ${codeDeliveryDetails.destination}. '
+  //     'Please check your ${codeDeliveryDetails.deliveryMedium.name} for the code.',
+  //   );
+  // }
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +150,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         labelText: 'Email',
                         hintText: email ?? 'Loading...',
                         obscureText: false,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 35),
                       CustomSmallButton(
@@ -109,7 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         label: 'Change Password',
                       ),
                       const SizedBox(height: 125),
-                      CustomButton(onTap: () {}, label: "Save changes"),
+                      CustomButton(onTap: onSaveChanges, label: "Save changes"),
                     ],
                   ),
                 ],
