@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Text(
                 'Date: ${DateFormat('yyyy-MM-dd').format(photoMarker.time.toLocal())}'),
-            Text('User ID: ${photoMarker.userId}'),
+            Text('Uploaded by ${photoMarker.userId}'),
           ],
         ),
         actions: [
@@ -103,18 +105,55 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadMarkers() async {
     try {
       List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
+      if (!mounted) return;
+      setState(() {
+        isLoading = true;
+      });
+
       final Uint8List? icon = await getBytesFromAsset('assets/marker.png', 48);
 
-      Set<Marker> newMarkers = photoMarkers.map((photoMarker) {
-        return Marker(
-          markerId: MarkerId(photoMarker.photoId),
-          position: LatLng(photoMarker.latitude, photoMarker.longitude),
-          icon: BitmapDescriptor.bytes(icon!),
-          onTap: () {
-            showMarkerInfo(photoMarker);
-          },
-        );
-      }).toSet();
+      const double gridSize = 0.0005; // Grid size in latitude/longitude degrees
+      const double maxOffset = 0.00015; // Maximum random offset in degrees
+
+      // Create a map to track markers in the same grid cell
+      Map<String, List<PhotoMarker>> gridMap = {};
+
+      // Group markers by grid cells
+      for (var marker in photoMarkers) {
+        String gridKey =
+            getGridKey(marker.latitude, marker.longitude, gridSize);
+        gridMap.putIfAbsent(gridKey, () => []).add(marker);
+      }
+
+      // Random number generator
+      final math.Random random = math.Random();
+
+      // Adjust markers within each grid cell
+      Set<Marker> newMarkers = {};
+      for (var gridMarkers in gridMap.values) {
+        for (int i = 0; i < gridMarkers.length; i++) {
+          PhotoMarker marker = gridMarkers[i];
+
+          // Apply random offsets to distribute markers within the grid cell
+          double randomLatOffset = (random.nextDouble() * 2 - 1) *
+              maxOffset; // Random between -maxOffset and +maxOffset
+          double randomLngOffset = (random.nextDouble() * 2 - 1) * maxOffset;
+
+          LatLng adjustedPosition = LatLng(
+            marker.latitude + randomLatOffset,
+            marker.longitude + randomLngOffset,
+          );
+
+          newMarkers.add(Marker(
+            markerId: MarkerId(marker.photoId),
+            position: adjustedPosition,
+            icon: BitmapDescriptor.bytes(icon!),
+            onTap: () {
+              showMarkerInfo(marker);
+            },
+          ));
+        }
+      }
 
       if (!mounted) return;
       setState(() {
@@ -122,8 +161,19 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       logger.e('Error loading markers: $e');
-      loadMarkers();
+
+      if (!mounted) return;
+      setState(() {
+        isLoading = true;
+      });
     }
+  }
+
+  /// Helper function to calculate the grid key based on a position and grid size
+  String getGridKey(double latitude, double longitude, double gridSize) {
+    int latGrid = (latitude / gridSize).floor();
+    int lngGrid = (longitude / gridSize).floor();
+    return '$latGrid:$lngGrid';
   }
 
   void onMapCreated(GoogleMapController controller) {
@@ -156,21 +206,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : GoogleMap(
-                    onMapCreated: onMapCreated,
-                    initialCameraPosition: CameraPosition(
-                      target: currentLocation,
-                      zoom: 14.0,
-                    ),
-                    myLocationEnabled: true,
-                    compassEnabled: false,
-                    markers: markers,
-                    style: mapStyle,
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : GoogleMap(
+                  onMapCreated: onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: currentLocation,
+                    zoom: 14.0,
                   ),
-          ),
+                  myLocationEnabled: true,
+                  compassEnabled: false,
+                  markers: markers,
+                  style: mapStyle,
+                ),
           Positioned(
             top: 50.0, // Adjust for your app bar or safe area
             left: 20.0,

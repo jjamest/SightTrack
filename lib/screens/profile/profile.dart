@@ -46,13 +46,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void onPressYourUploads() {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) =>
+    //           const RecentUploadsScreen()), // Replace with your actual page
+    // );
+  }
+
   Future<void> getCurrentUser() async {
     try {
-      // Start fetching username and email concurrently
       final usernameFuture = Amplify.Auth.getCurrentUser();
       final attributesFuture = Amplify.Auth.fetchUserAttributes();
 
-      // Await the username retrieval
       usernameFuture.then((user) {
         setState(() {
           username = user.username;
@@ -62,7 +69,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showErrorMessage(context, 'Error fetching username: $e');
       });
 
-      // Await the attributes retrieval and extract email
       attributesFuture.then((attributes) {
         final emailAttribute = attributes.firstWhere(
           (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
@@ -117,18 +123,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 10),
             CustomTextLink(text: "Privacy Policy", onPressed: onPressPrivacy),
             const SizedBox(height: 20),
+            ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.upload_file, size: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    'View Your Uploads',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              onTap: onPressYourUploads,
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: onEditProfile,
               child: const Text('Edit Profile'),
             ),
             const SizedBox(height: 20),
-            // SignOutButton()
             ElevatedButton(
               onPressed: () async {
                 await Amplify.Auth.signOut();
               },
               child: const Text('Logout'),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

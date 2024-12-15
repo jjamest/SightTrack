@@ -13,7 +13,7 @@ void main() async {
     await configureAmplify();
     runApp(const App());
   } on AmplifyException catch (e) {
-    runApp(Text("Error configuring Amplify: ${e.message}"));
+    runApp(Text('Error configuring Amplify: ${e.message}'));
   }
 }
 

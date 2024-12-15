@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -61,12 +62,14 @@ class _CaptureScreenState extends State<CaptureScreen> {
       if (labels == null) {
         showErrorMessage(context, "Bad photo, try again!");
       } else {
-        // Get current user ID from Firebase
-        // final userId = FirebaseAuth.instance.currentUser?.uid;
-        // if (userId == null) {
-        //   showErrorMessage(context, "User not logged in.");
-        //   return;
-        // }
+        String? username;
+        final usernameFuture = Amplify.Auth.getCurrentUser();
+        usernameFuture.then((user) {
+          username = user.username;
+        }).catchError((e) {
+          if (!mounted) return;
+          showErrorMessage(context, 'Error fetching username: $e');
+        });
 
         // Get user position via Geolocator
         Position position = await Geolocator.getCurrentPosition(
@@ -76,7 +79,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
         // Step 3: Create Photomarker object with metadata
         final photoMarker = PhotoMarker(
           photoId: presignedData['object_key'],
-          userId: "TEST USER ID", // userId,
+          userId: username!, // userId,
           time: DateTime.now(),
           latitude: position.latitude,
           longitude: position.longitude,
@@ -106,7 +109,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
         isLoading = false;
         isFrozen = false;
       });
-      showErrorMessage(context, 'Error capturing imag: $e');
+      showErrorMessage(context, 'Error capturing image: $e');
     }
   }
 

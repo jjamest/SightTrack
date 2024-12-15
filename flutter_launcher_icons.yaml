@@ -1,0 +1,6 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon.jpg"
+
+  ios: true
+  remove_alpha_channel_ios: true

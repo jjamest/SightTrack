@@ -82,101 +82,106 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
       ),
       body: SingleChildScrollView(
         // Wrap the body in a scroll view for better usability
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    // Styled explanatory text
-                    Text(
-                      'Describe your photo',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade700,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    // Modern dropdown for selecting the label with the highest confidence
-                    if (widget.labels.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade400),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.teal.shade200,
-                              blurRadius: 5,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      // Styled explanatory text
+                      Text(
+                        'Describe your photo',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade700,
+                          height: 1.5,
                         ),
-                        child: DropdownButton<String>(
-                          value: selectedLabel,
-                          isExpanded: true,
-                          underline:
-                              const SizedBox(), // Remove the default underline
-                          icon: const Icon(Icons.arrow_drop_down,
-                              color: Colors.black),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          items: widget.labels.map((label) {
-                            return DropdownMenuItem<String>(
-                              value: label['Name'],
-                              child: Text(
-                                label['Name'],
+                      ),
+                      const SizedBox(height: 10),
+                      // Modern dropdown for selecting the label with the highest confidence
+                      if (widget.labels.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey.shade400),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.teal.shade200,
+                                blurRadius: 5,
+                                offset: const Offset(0, 2),
                               ),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedLabel = newValue;
-                            });
-                          },
+                            ],
+                          ),
+                          child: DropdownButton<String>(
+                            value: selectedLabel,
+                            isExpanded: true,
+                            underline:
+                                const SizedBox(), // Remove the default underline
+                            icon: const Icon(Icons.arrow_drop_down,
+                                color: Colors.black),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            items: widget.labels.map((label) {
+                              return DropdownMenuItem<String>(
+                                value: label['Name'],
+                                child: Text(
+                                  label['Name'],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedLabel = newValue;
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                    const SizedBox(height: 30),
-                    CustomTextBox(
-                        label: 'Description',
-                        hintText: 'Enter your description here...',
-                        controller: descriptionController),
-                  ],
+                      const SizedBox(height: 30),
+                      CustomTextBox(
+                          label: 'Description',
+                          hintText: 'Enter your description here...',
+                          controller: descriptionController),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-              isLoading
-                  ? const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(), // Loading spinner
-                        SizedBox(height: 20),
-                        Text(
-                          "Uploading...",
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      ],
-                    )
-                  : CustomButton(onTap: onUpload, label: 'Upload Image'),
+                isLoading
+                    ? const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(), // Loading spinner
+                          SizedBox(height: 20),
+                          Text(
+                            "Uploading...",
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        ],
+                      )
+                    : CustomButton(onTap: onUpload, label: 'Upload Image'),
 
-              const SizedBox(height: 30),
-              // Displaying the image
-              Image.file(
-                File(widget.image.path),
-                width: screenWidth,
-                height: null,
-                fit: BoxFit.cover,
-              ),
-            ],
+                const SizedBox(height: 30),
+                // Displaying the image
+                Image.file(
+                  File(widget.image.path),
+                  width: screenWidth,
+                  height: null,
+                  fit: BoxFit.cover,
+                ),
+              ],
+            ),
           ),
         ),
       ),
