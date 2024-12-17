@@ -5,6 +5,7 @@ import 'package:sighttrack_app/screens/info/faq.dart';
 import 'package:sighttrack_app/screens/info/privacy.dart';
 import 'package:sighttrack_app/screens/info/terms.dart';
 import 'package:sighttrack_app/screens/profile/edit_profile.dart';
+import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -47,12 +48,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void onPressYourUploads() {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) =>
-    //           const RecentUploadsScreen()), // Replace with your actual page
-    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const UploadGalleryScreen(
+          global: false,
+        ),
+      ), // Replace with your actual page
+    );
   }
 
   Future<void> getCurrentUser() async {

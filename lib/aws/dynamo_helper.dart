@@ -11,11 +11,10 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
       'photoId': photoMarker.photoId,
       'userId': photoMarker.userId,
       'time': photoMarker.time.toIso8601String(),
-      'location': {
-        'latitude': photoMarker.latitude,
-        'longitude': photoMarker.longitude,
-      },
+      'latitude': photoMarker.latitude,
+      'longitude': photoMarker.longitude,
       'imageUrl': photoMarker.imageUrl,
+      'label': photoMarker.label,
       'description': photoMarker.description,
     };
 
@@ -50,5 +49,15 @@ Future<List<PhotoMarker>> getMarkersFromAPI() async {
     }).toList();
   } else {
     throw Exception('Failed to load photo markers');
+  }
+}
+
+Future<Map<String, dynamic>> fetchAnalysisData() async {
+  final response = await http.get(Uri.parse(ApiConstants.analysisURL));
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load analysis data');
   }
 }

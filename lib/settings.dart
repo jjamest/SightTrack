@@ -7,4 +7,6 @@ class ApiConstants {
       'https://ry9z08o9pd.execute-api.us-east-1.amazonaws.com/prod/savePhotoMetadata';
   static const String dynamoRetrieveURL =
       'https://ry9z08o9pd.execute-api.us-east-1.amazonaws.com/prod/getPhotoMarkers';
+  static const String analysisURL =
+      'https://fp8l4g5h62.execute-api.us-east-1.amazonaws.com/prod/getAnalysis';
 }

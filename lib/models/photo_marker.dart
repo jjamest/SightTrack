@@ -5,7 +5,7 @@ class PhotoMarker {
   final double latitude;
   final double longitude;
   final String imageUrl;
-  String label;
+  String? label;
   String? description;
 
   PhotoMarker({
@@ -15,7 +15,7 @@ class PhotoMarker {
     required this.latitude,
     required this.longitude,
     required this.imageUrl,
-    required this.label,
+    this.label,
     this.description,
   });
 
@@ -26,7 +26,7 @@ class PhotoMarker {
       time: DateTime.parse(map['time'] ?? DateTime.now().toIso8601String()),
       latitude: double.parse(map['latitude'].toString()),
       longitude: double.parse(map['longitude'].toString()),
-      imageUrl: map['imageUrl'] ?? '', // Now contains the presigned URL
+      imageUrl: map['imageUrl'] ?? '', // Contains the presigned URL
       label: map['label'] ?? '',
       description: map['description'] ?? '',
     );
@@ -40,6 +40,7 @@ class PhotoMarker {
       'latitude': latitude,
       'longitude': longitude,
       'imageUrl': imageUrl,
+      'label': label,
       'description': description,
     };
   }

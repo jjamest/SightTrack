@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sighttrack_app/aws/dynamo_helper.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
-import 'package:sighttrack_app/screens/upload_gallery.dart';
+import 'package:sighttrack_app/navigation_bar.dart';
+import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
+import 'package:sighttrack_app/screens/upload/view_upload.dart';
 import 'package:sighttrack_app/util/graphics.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late GoogleMapController mapController;
-  late String mapStyle;
   late LatLng currentLocation;
   bool isLoading = true;
 
@@ -67,39 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
       currentLocation = location;
       isLoading = false;
     });
-  }
-
-  Future<void> loadMapStyle() async {
-    mapStyle = await rootBundle.loadString('assets/map_style.json');
-  }
-
-  void showMarkerInfo(PhotoMarker photoMarker) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          photoMarker.description!.isEmpty
-              ? 'Untitled capture'
-              : photoMarker.description!,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.network(photoMarker.imageUrl),
-            const SizedBox(height: 8),
-            Text(
-                'Date: ${DateFormat('yyyy-MM-dd').format(photoMarker.time.toLocal())}'),
-            Text('Uploaded by ${photoMarker.userId}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<void> loadMarkers() async {
@@ -149,7 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
             position: adjustedPosition,
             icon: BitmapDescriptor.bytes(icon!),
             onTap: () {
-              showMarkerInfo(marker);
+              // showMarkerInfo(marker);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewUploadScreen(photoMarker: marker),
+                ),
+              );
             },
           ));
         }
@@ -162,10 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       logger.e('Error loading markers: $e');
 
-      if (!mounted) return;
-      setState(() {
-        isLoading = true;
-      });
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const CustomNavigationBar()));
     }
   }
 
@@ -185,7 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.wait([
       loadMarkers(),
       getLocation(),
-      loadMapStyle(),
     ]);
 
     // After all tasks are complete
@@ -217,10 +187,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   myLocationEnabled: true,
                   compassEnabled: false,
                   markers: markers,
-                  style: mapStyle,
+                  mapType: MapType.satellite,
                 ),
           Positioned(
-            top: 50.0, // Adjust for your app bar or safe area
+            top: 50.0,
             left: 20.0,
             child: FloatingActionButton(
               onPressed: () {

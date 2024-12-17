@@ -61,7 +61,7 @@ class SuccessScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => destination,
                     ),
-                    (route) => true, // Removes all previous routes
+                    (route) => false, // Removes all previous routes
                   );
                 },
                 label: 'Go Back'),

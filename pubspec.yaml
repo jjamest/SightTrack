@@ -31,8 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # firebase_core: ^3.7.0
-  # firebase_auth: ^5.3.2
   http: ^1.2.2
   http_parser: ^4.0.2
   logger: ^2.4.0
@@ -47,6 +45,7 @@ dependencies:
   amplify_flutter: ^2.5.0
   amplify_auth_cognito: ^2.5.0
   amplify_authenticator: ^2.3.1
+  fl_chart: ^0.69.2
 
 flutter_icons:
   image_path: "assets/icon.jpg"
@@ -79,7 +78,6 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/map_style.json
     - assets/terms.txt
     - assets/privacy.txt
     - assets/marker.png

@@ -79,13 +79,11 @@ class _CaptureScreenState extends State<CaptureScreen> {
         // Step 3: Create Photomarker object with metadata
         final photoMarker = PhotoMarker(
           photoId: presignedData['object_key'],
-          userId: username!, // userId,
+          userId: username!,
           time: DateTime.now(),
           latitude: position.latitude,
           longitude: position.longitude,
           imageUrl: presignedData['url'],
-          label: '',
-          // description: 'A photo description',
         );
 
         // Step 4 moved to review_upload.dart

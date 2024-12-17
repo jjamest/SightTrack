@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sighttrack_app/screens/capture/capture.dart';
+import 'package:sighttrack_app/screens/data_overview.dart';
 import 'package:sighttrack_app/screens/home.dart';
 import 'package:sighttrack_app/screens/profile/profile.dart';
 
@@ -26,6 +27,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       widgetOptions = <Widget>[
         const HomeScreen(),
         CaptureScreen(camera: camera),
+        const DataOverviewScreen(),
         const ProfileScreen(),
       ];
       doneInitializing = true;
@@ -65,6 +67,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                   tabs: const [
                     GButton(icon: Icons.home, text: 'Home'),
                     GButton(icon: Icons.camera_alt, text: 'Capture'),
+                    GButton(icon: Icons.analytics, text: 'Data'),
                     GButton(icon: Icons.person, text: 'Profile'),
                   ],
                 ),
