@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/aws/dynamo.dart';
 import 'package:sighttrack_app/logging.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class DataOverviewScreen extends StatefulWidget {
-  const DataOverviewScreen({super.key});
+class DataScreen extends StatefulWidget {
+  const DataScreen({super.key});
 
   @override
-  State<DataOverviewScreen> createState() => _DataOverviewScreenState();
+  State<DataScreen> createState() => _DataScreenState();
 }
 
-class _DataOverviewScreenState extends State<DataOverviewScreen> {
+class _DataScreenState extends State<DataScreen> {
   Map<String, dynamic>? analysisData;
   bool isLoading = true;
   String? errorMessage;
@@ -23,15 +23,16 @@ class _DataOverviewScreenState extends State<DataOverviewScreen> {
 
   Future<void> fetchData() async {
     try {
-      var d = await fetchAnalysisData();
+      var d = await getDataAnalysis();
+      if (!mounted) return;
       setState(() {
         analysisData = d;
         isLoading = false;
       });
-      logger.d(d);
     } catch (e, stack) {
       // Concatenate error and stack trace into a single string
       logger.e('Failed to fetch analysis data: $e $stack');
+      if (!mounted) return;
       setState(() {
         errorMessage = 'Failed to load data';
         isLoading = false;
@@ -175,7 +176,7 @@ class _DataOverviewScreenState extends State<DataOverviewScreen> {
         color: cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             spreadRadius: 2,
           ),

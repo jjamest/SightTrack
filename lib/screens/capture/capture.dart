@@ -4,9 +4,9 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sighttrack_app/aws/s3_helper.dart';
+import 'package:sighttrack_app/aws/storage.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
-import 'package:sighttrack_app/screens/capture/review_upload.dart';
+import 'package:sighttrack_app/screens/capture/review_capture.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 class CaptureScreen extends StatefulWidget {
@@ -20,10 +20,10 @@ class CaptureScreen extends StatefulWidget {
 
 class _CaptureScreenState extends State<CaptureScreen> {
   late CameraController controller;
-  bool isLoading = false;
-  bool isFrozen = false;
   late Future<void> initializeControllerFuture;
   late List<dynamic>? labels;
+  bool isLoading = false;
+  bool isFrozen = false;
 
   void initializeCamera() {
     controller = CameraController(widget.camera, ResolutionPreset.high);
@@ -93,7 +93,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ReviewUploadScreen(
+            builder: (context) => ReviewCaptureScreen(
               labels: labels!,
               image: image,
               photoMarker: photoMarker,

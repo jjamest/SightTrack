@@ -2,16 +2,15 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/aws/dynamo.dart';
 import 'package:sighttrack_app/components/button.dart';
 import 'package:sighttrack_app/components/success.dart';
 import 'package:sighttrack_app/components/text_box.dart';
-import 'package:sighttrack_app/logging.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 
-class ReviewUploadScreen extends StatefulWidget {
-  const ReviewUploadScreen(
+class ReviewCaptureScreen extends StatefulWidget {
+  const ReviewCaptureScreen(
       {super.key,
       required this.labels,
       required this.image,
@@ -22,10 +21,10 @@ class ReviewUploadScreen extends StatefulWidget {
   final PhotoMarker photoMarker;
 
   @override
-  State<ReviewUploadScreen> createState() => _ReviewUploadScreenState();
+  State<ReviewCaptureScreen> createState() => _ReviewCaptureScreenState();
 }
 
-class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
+class _ReviewCaptureScreenState extends State<ReviewCaptureScreen> {
   late String selectedLabel;
   bool isLoading = false;
   final TextEditingController descriptionController = TextEditingController();
@@ -37,17 +36,16 @@ class _ReviewUploadScreenState extends State<ReviewUploadScreen> {
 
     // Update photoMarker instance
     widget.photoMarker.label = selectedLabel;
-    logger.d(selectedLabel);
     widget.photoMarker.description = descriptionController.text;
 
-    await savePhotoMetadata(widget.photoMarker);
+    await savePhotoMarker(widget.photoMarker);
 
     setState(() {
       isLoading = false;
     });
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => SuccessScreen(

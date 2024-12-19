@@ -5,7 +5,7 @@ import 'package:sighttrack_app/logging.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/settings.dart';
 
-Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
+Future<void> savePhotoMarker(PhotoMarker photoMarker) async {
   try {
     final requestPayload = {
       'photoId': photoMarker.photoId,
@@ -20,14 +20,14 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
 
     // Make the POST request to API Gateway
     final response = await http.post(
-      Uri.parse(ApiConstants.dynamoSaveURL),
+      Uri.parse(ApiConstants.savePhotoMarker),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(requestPayload),
     );
 
     // Handle the response
     if (response.statusCode == 200) {
-      logger.i('Metadata saved successfully');
+      logger.i('Photo marker saved');
     } else {
       logger.e(
           'Error saving metadata: ${response.statusCode} - ${response.body}');
@@ -37,8 +37,8 @@ Future<void> savePhotoMetadata(PhotoMarker photoMarker) async {
   }
 }
 
-Future<List<PhotoMarker>> getMarkersFromAPI() async {
-  final response = await http.get(Uri.parse(ApiConstants.dynamoRetrieveURL));
+Future<List<PhotoMarker>> getPhotoMarkers() async {
+  final response = await http.get(Uri.parse(ApiConstants.getPhotoMarkers));
 
   if (response.statusCode == 200) {
     final List<dynamic> markersData = json.decode(response.body);
@@ -52,8 +52,8 @@ Future<List<PhotoMarker>> getMarkersFromAPI() async {
   }
 }
 
-Future<Map<String, dynamic>> fetchAnalysisData() async {
-  final response = await http.get(Uri.parse(ApiConstants.analysisURL));
+Future<Map<String, dynamic>> getDataAnalysis() async {
+  final response = await http.get(Uri.parse(ApiConstants.getAnalysis));
 
   if (response.statusCode == 200) {
     return json.decode(response.body);

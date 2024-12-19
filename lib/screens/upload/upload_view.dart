@@ -5,19 +5,18 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sighttrack_app/components/button.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
 
-class ViewUploadScreen extends StatefulWidget {
-  const ViewUploadScreen({super.key, required this.photoMarker});
+class UploadViewScreen extends StatefulWidget {
+  const UploadViewScreen({super.key, required this.photoMarker});
 
   final PhotoMarker photoMarker;
 
   @override
-  State<ViewUploadScreen> createState() => _ViewUploadScreenState();
+  State<UploadViewScreen> createState() => _UploadViewScreenState();
 }
 
-class _ViewUploadScreenState extends State<ViewUploadScreen> {
+class _UploadViewScreenState extends State<UploadViewScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation;
 
@@ -167,12 +166,19 @@ class _ViewUploadScreenState extends State<ViewUploadScreen> {
                       ),
                       const SizedBox(height: 25),
                       Image.network(widget.photoMarker.imageUrl),
-                      const SizedBox(height: 35),
-                      CustomButton(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          label: "Close"),
+                      const SizedBox(height: 25),
+                      Center(
+                        child: Text(
+                          'COMMENTS',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                            letterSpacing: 1.0,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                       const SizedBox(height: 25),
                       Divider(),
                       const SizedBox(height: 25),

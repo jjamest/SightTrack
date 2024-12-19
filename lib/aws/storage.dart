@@ -7,15 +7,12 @@ import 'package:sighttrack_app/settings.dart';
 
 Future<Map<String, dynamic>> getPresignedURL() async {
   try {
-    final response = await http.get(Uri.parse(ApiConstants.s3getPresignedURL));
+    final response = await http.get(Uri.parse(ApiConstants.getPresignedUrl));
+    logger.d(response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-
-      // Parse the 'body' field which is a JSON string
-      final Map<String, dynamic> bodyData = jsonDecode(responseData['body']);
-
-      return bodyData;
+      return responseData;
     } else {
       logger.e("Failed to get pre-signed URL: ${response.statusCode}");
       throw Exception('Failed to get pre-signed URL');
@@ -75,33 +72,34 @@ Future<List<dynamic>?> uploadImageToS3(
 Future<List<dynamic>?> getLabelsFromAPI(String objectKey) async {
   try {
     final response = await http.post(
-      Uri.parse(ApiConstants.rekognitionURL),
+      Uri.parse(ApiConstants.analyzePhoto),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'object_key': objectKey}),
     );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+    logger.i(response.body);
+    logger.i(objectKey);
 
-      dynamic body = responseData['body'];
+    if (response.statusCode == 200) {
+      dynamic responseData = jsonDecode(response.body);
+
       Map<String, dynamic> data;
 
-      if (body is String) {
+      if (responseData is String) {
         // 'body' is a JSON string; parse it
-        data = jsonDecode(body);
-      } else if (body is Map<String, dynamic>) {
+        data = jsonDecode(responseData);
+      } else if (responseData is Map<String, dynamic>) {
         // 'body' is already a Map; use it directly
-        data = body;
+        data = responseData;
       } else {
-        logger
-            .w('Unexpected type for responseData["body"]: ${body.runtimeType}');
+        logger.w(
+            'Unexpected type for responseData["body"]: ${responseData.runtimeType}');
         return null;
       }
 
       final labels = data['labels'];
 
       if (labels != null && labels is List<dynamic>) {
-        logger.i('Labels and confidence scores detected');
         return labels;
       } else {
         logger.e('No labels found or invalid data format.');

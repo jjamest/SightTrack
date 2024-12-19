@@ -1,8 +1,8 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/aws/dynamo.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
-import 'package:sighttrack_app/screens/upload/view_upload.dart';
+import 'package:sighttrack_app/screens/upload/upload_view.dart';
 
 class UploadGalleryScreen extends StatefulWidget {
   const UploadGalleryScreen({super.key, this.global = true});
@@ -20,7 +20,7 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
   void initialize() async {
     try {
       // Fetch photo markers from API
-      photoMarkers = await getMarkersFromAPI();
+      photoMarkers = await getPhotoMarkers();
 
       // Sort photo markers by date
       photoMarkers.sort((a, b) => b.time.compareTo(a.time));
@@ -90,7 +90,7 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ViewUploadScreen(
+                                builder: (context) => UploadViewScreen(
                                     photoMarker: photoMarkers[index]),
                               ),
                             );

@@ -1,3 +1,5 @@
+import 'package:sighttrack_app/models/comment.dart';
+
 class PhotoMarker {
   final String photoId;
   final String userId;
@@ -5,8 +7,9 @@ class PhotoMarker {
   final double latitude;
   final double longitude;
   final String imageUrl;
-  String? label;
-  String? description;
+  String? label; // Late
+  String? description; // Late
+  List<Comment> comments;
 
   PhotoMarker({
     required this.photoId,
@@ -17,18 +20,26 @@ class PhotoMarker {
     required this.imageUrl,
     this.label,
     this.description,
+    this.comments = const [],
   });
-
   factory PhotoMarker.fromMap(Map<String, dynamic> map) {
+    var commentsFromMap = <Comment>[];
+    if (map['comments'] != null) {
+      commentsFromMap = List<Map<String, dynamic>>.from(map['comments'])
+          .map((commentMap) => Comment.fromMap(commentMap))
+          .toList();
+    }
+
     return PhotoMarker(
       photoId: map['photoId'] ?? '',
       userId: map['userId'] ?? '',
       time: DateTime.parse(map['time'] ?? DateTime.now().toIso8601String()),
       latitude: double.parse(map['latitude'].toString()),
       longitude: double.parse(map['longitude'].toString()),
-      imageUrl: map['imageUrl'] ?? '', // Contains the presigned URL
-      label: map['label'] ?? '',
-      description: map['description'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
+      label: map['label'],
+      description: map['description'],
+      comments: commentsFromMap,
     );
   }
 
@@ -42,6 +53,7 @@ class PhotoMarker {
       'imageUrl': imageUrl,
       'label': label,
       'description': description,
+      'comments': comments.map((c) => c.toMap()).toList(),
     };
   }
 }

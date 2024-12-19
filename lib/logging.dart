@@ -6,7 +6,7 @@ var logger = Logger(
     methodCount: 0, // No method chain
     errorMethodCount: 0, // No method chain for errors
     lineLength: 120, // Adjust line length if needed
-    colors: true, // Colorful output
+    colors: false, // Colorful output
     printEmojis: true, // Emojis are helpful for distinguishing log types
     dateTimeFormat: DateTimeFormat.none,
   ),

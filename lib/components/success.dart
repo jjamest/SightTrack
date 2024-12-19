@@ -56,13 +56,7 @@ class SuccessScreen extends StatelessWidget {
 
             CustomButton(
                 onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => destination,
-                    ),
-                    (route) => false, // Removes all previous routes
-                  );
+                  Navigator.pop(context);
                 },
                 label: 'Go Back'),
           ],

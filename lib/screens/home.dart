@@ -6,11 +6,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sighttrack_app/aws/dynamo_helper.dart';
+import 'package:sighttrack_app/aws/dynamo.dart';
 import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
-import 'package:sighttrack_app/screens/upload/view_upload.dart';
+import 'package:sighttrack_app/screens/upload/upload_view.dart';
 import 'package:sighttrack_app/util/graphics.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadMarkers() async {
     try {
-      List<PhotoMarker> photoMarkers = await getMarkersFromAPI();
+      List<PhotoMarker> photoMarkers = await getPhotoMarkers();
       if (!mounted) return;
       setState(() {
         isLoading = true;
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ViewUploadScreen(photoMarker: marker),
+                  builder: (context) => UploadViewScreen(photoMarker: marker),
                 ),
               );
             },
