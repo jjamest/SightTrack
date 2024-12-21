@@ -4,6 +4,8 @@
   Updated API urls
 */
 class ApiConstants {
+  static const String baseURL =
+      'https://hy6sxmw15g.execute-api.us-east-1.amazonaws.com/prod';
   static const String getPresignedUrl =
       'https://hy6sxmw15g.execute-api.us-east-1.amazonaws.com/prod/getPresignedUrl';
   static const String analyzePhoto =
@@ -20,7 +22,6 @@ class ApiConstants {
   Deprecated URLs
   Separate APIs
 */
-
 // class ApiConstants {
 //   static const String getPresignedURL =
 //       'https://i6683l9uod.execute-api.us-east-1.amazonaws.com/prod/get-presigned-url';

@@ -104,11 +104,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             const SizedBox(height: 120),
-            const Icon(
-              Icons.person,
-              size: 120,
+            CircleAvatar(
+              radius: 60,
+              child: Text(
+                username == null ? '' : username![0].toUpperCase(),
+                style: TextStyle(fontSize: 40),
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Text(
               username ?? 'Loading...',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
