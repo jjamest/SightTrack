@@ -17,16 +17,20 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int selectedIndex = 1;
   bool doneInitializing = false;
   late List<Widget> widgetOptions;
-  late CameraDescription camera;
+  late CameraDescription? camera;
 
   Future<void> initializeElements() async {
     final cameras = await availableCameras();
 
     setState(() {
-      camera = cameras.first;
+      try {
+        camera = cameras.first;
+      } catch (e) {
+        camera = null;
+      }
       widgetOptions = <Widget>[
         const HomeScreen(),
-        CaptureScreen(camera: camera),
+        CaptureScreenHandler(camera: camera),
         const DataScreen(),
         const ProfileScreen(),
       ];

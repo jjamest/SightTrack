@@ -1,4 +1,3 @@
-// lib/widgets/comments_widget.dart
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/models/comment.dart';
 import 'package:sighttrack_app/services/comment_service.dart';
@@ -8,16 +7,16 @@ class CommentsWidget extends StatefulWidget {
   final String currentUser;
 
   const CommentsWidget({
-    Key? key,
+    super.key,
     required this.photoId,
     required this.currentUser,
-  }) : super(key: key);
+  });
 
   @override
-  _CommentsWidgetState createState() => _CommentsWidgetState();
+  CommentsWidgetState createState() => CommentsWidgetState();
 }
 
-class _CommentsWidgetState extends State<CommentsWidget> {
+class CommentsWidgetState extends State<CommentsWidget> {
   final TextEditingController _commentController = TextEditingController();
   List<Comment> _comments = [];
   bool _isLoading = true;
@@ -69,6 +68,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
           _isSubmitting = false;
         });
         _commentController.clear();
+
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Comment added successfully')),
         );
@@ -76,6 +77,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
         setState(() {
           _isSubmitting = false;
         });
+
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add comment')),
         );
@@ -84,6 +87,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
       setState(() {
         _isSubmitting = false;
       });
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error adding comment')),
       );

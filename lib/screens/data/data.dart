@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/aws/dynamo.dart';
+import 'package:sighttrack_app/components/list_tile.dart';
 import 'package:sighttrack_app/logging.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -14,12 +15,6 @@ class _DataScreenState extends State<DataScreen> {
   Map<String, dynamic>? analysisData;
   bool isLoading = true;
   String? errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
 
   Future<void> fetchData() async {
     try {
@@ -40,10 +35,36 @@ class _DataScreenState extends State<DataScreen> {
     }
   }
 
+  String getMonthName(int month) {
+    const List<String> months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+    return months[month - 1];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String currentMonth = getMonthName(now.month);
+
     // Using a teal/green color scheme
-    final Color primaryColor = Colors.teal.shade700;
     final Color accentColor = Colors.teal.shade200;
     final Color backgroundColor = Colors.teal.shade50;
     const Color textColor = Colors.black87;
@@ -52,18 +73,6 @@ class _DataScreenState extends State<DataScreen> {
       fontSize: 24,
       fontWeight: FontWeight.bold,
       color: textColor,
-    );
-
-    const cardTitleStyle = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: textColor,
-    );
-
-    const cardValueStyle = TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-      color: Colors.black87,
     );
 
     const captionStyle = TextStyle(
@@ -95,58 +104,82 @@ class _DataScreenState extends State<DataScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 55),
+                          Center(
+                            child: Column(
+                              children: [
+                                Icon(Icons.data_exploration,
+                                    size: 200, color: Colors.teal),
+                                Text("An overview of our trends",
+                                    style: captionStyle),
+                              ],
+                            ),
+                          ),
                           const SizedBox(height: 40),
-                          Text("Overview", style: headerStyle),
-                          const SizedBox(height: 20),
-                          Wrap(
-                            spacing: 20,
-                            runSpacing: 20,
+                          Text("Basic statistics", style: headerStyle),
+                          const SizedBox(height: 10),
+                          Column(
                             children: [
-                              _buildInfoCard(
-                                title: "Total Uploads",
-                                value:
-                                    "${analysisData!['totalUploadsSinceOldest']}",
-                                titleStyle: cardTitleStyle,
-                                valueStyle: cardValueStyle,
-                                captionStyle: captionStyle,
-                                cardColor: accentColor,
-                              ),
-                              _buildInfoCard(
-                                title: "Current Month",
+                              CustomListTile(
+                                title: "Uploads This $currentMonth",
                                 value:
                                     "${analysisData!['currentMonthUploads']}",
-                                subtitle:
-                                    "Prev: ${analysisData!['previousMonthUploads']}",
-                                titleStyle: cardTitleStyle,
-                                valueStyle: cardValueStyle,
-                                captionStyle: captionStyle,
-                                cardColor: accentColor,
+                                icon: Icons.upload,
+                                color: Colors.red,
                               ),
-                              // Convert the averageTimeBetweenUploadsSeconds to int if needed
-                              _buildInfoCard(
-                                title: "Avg Time Between Uploads",
+                              CustomListTile(
+                                title: "Uploads Last Month",
+                                value:
+                                    "${analysisData!['previousMonthUploads']}",
+                                icon: Icons.upload,
+                                color: Colors.green,
+                              ),
+                              CustomListTile(
+                                title: "Total Uploads",
+                                value: "${analysisData!['totalUploads']}",
+                                icon: Icons.upload,
+                                color: Colors.orange,
+                              ),
+                              Divider(
+                                color: Colors.black,
+                                thickness: 2,
+                              ),
+                              CustomListTile(
+                                title: "Total Users",
+                                value: "${analysisData!['totalUsers']}",
+                                icon: Icons.person,
+                                color: Colors.blue,
+                              ),
+                              CustomListTile(
+                                title: "Time Between Uploads",
                                 value: _formatTimeDuration(
-                                  (analysisData![
-                                              'averageTimeBetweenUploadsSeconds']
-                                          as num)
+                                  (analysisData!['timeBetweenUploads'] as num)
                                       .toInt(),
                                 ),
-                                titleStyle: cardTitleStyle,
-                                valueStyle: cardValueStyle,
-                                captionStyle: captionStyle,
-                                cardColor: accentColor,
+                                icon: Icons.timer,
+                                color: Colors.cyan,
                               ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "Uploads/month",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(25, 15, 25, 10),
+                                child: _buildMonthlyTrendsChart(
+                                  analysisData!['monthlyTrends'],
+                                  Colors.lightGreen,
+                                ),
+                              )
                             ],
                           ),
-                          const SizedBox(height: 30),
-                          Text("Monthly Upload Trends", style: headerStyle),
+                          Text("Species Statistics", style: headerStyle),
                           const SizedBox(height: 10),
-                          _buildMonthlyTrendsChart(
-                            analysisData!['monthlyTrends'],
-                            primaryColor,
-                          ),
+                          Text("Common Species", style: subHeadStyle),
+                          _buildCommonSpeciesList(
+                              analysisData!['commonSpecies'], textColor),
                           const SizedBox(height: 30),
-                          Text("Top Contributing Users", style: headerStyle),
+                          Text("User Leaderboard", style: headerStyle),
                           const SizedBox(height: 10),
                           _buildTopUsersList(analysisData!['topUsers'],
                               subHeadStyle, accentColor),
@@ -159,41 +192,39 @@ class _DataScreenState extends State<DataScreen> {
     );
   }
 
-  Widget _buildInfoCard({
-    required String title,
-    required String value,
-    String? subtitle,
-    required TextStyle titleStyle,
-    required TextStyle valueStyle,
-    required TextStyle captionStyle,
-    required Color cardColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      width: 140,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: titleStyle),
-          const SizedBox(height: 4),
-          Text(value, style: valueStyle),
-          if (subtitle != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(subtitle, style: captionStyle),
+  Widget _buildCommonSpeciesList(List<dynamic> commonSpecies, Color textColor) {
+    if (commonSpecies.isEmpty) {
+      return const Center(
+        child: Text(
+          "No species data available.",
+          style: TextStyle(color: Colors.black87),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 60,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: commonSpecies.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          var species = commonSpecies[index];
+          return Chip(
+            avatar: CircleAvatar(
+              backgroundColor: Colors.teal.shade700,
+              child: Text(
+                "${index + 1}",
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
             ),
-        ],
+            label: Text(
+              "${species['label']} (${species['count']})",
+              style: TextStyle(color: textColor),
+            ),
+            backgroundColor: Colors.teal.shade100,
+          );
+        },
       ),
     );
   }
@@ -270,29 +301,71 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   Widget _buildTopUsersList(
-      List<dynamic> topUsers, TextStyle subheadStyle, Color cardColor) {
+      List<dynamic> topUsers, TextStyle textStyle, Color dividerColor) {
     if (topUsers.isEmpty) {
-      return const Text("No user data available.",
-          style: TextStyle(color: Colors.black87));
+      return const Center(
+        child: Text(
+          "No user data available.",
+          style: TextStyle(color: Colors.black87),
+        ),
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: topUsers.map((u) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(u['userId'].toString(), style: subheadStyle),
-              Text("${u['count']} uploads", style: subheadStyle),
-            ],
-          ),
+      children: topUsers.asMap().entries.map((entry) {
+        int index = entry.key;
+        var user = entry.value;
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      // Ranking badge
+                      Container(
+                        width: 28,
+                        height: 28,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.teal.shade800,
+                        ),
+                        child: Text(
+                          "${index + 1}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // User ID
+                      Text(
+                        user['userId'].toString(),
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
+                  // Count
+                  Text(
+                    "${user['count']} points",
+                    style: textStyle,
+                  ),
+                ],
+              ),
+            ),
+            if (index < topUsers.length - 1)
+              Divider(
+                color: dividerColor,
+                thickness: 1,
+                height: 0, // Aligns tightly with rows
+              ),
+          ],
         );
       }).toList(),
     );

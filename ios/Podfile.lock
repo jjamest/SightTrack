@@ -76,19 +76,19 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  amplify_auth_cognito: b76a0e367489da2b9a3c6e5a8ec74a72a0a7cc2f
-  amplify_secure_storage: ede2a5027299bab196b8baa030ed3f4cf50ce9a9
-  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
-  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  amplify_auth_cognito: a5d9cb77abfbe05e3501ad0c45dddc81503e7074
+  amplify_secure_storage: 3edc30177ffefbcee786c408a21c02f8ab9f168e
+  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  geolocator_apple: 9bcea1918ff7f0062d98345d238ae12718acfbc1
+  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
-  google_maps_flutter_ios: e31555a04d1986ab130f2b9f24b6cdc861acc6d3
+  google_maps_flutter_ios: 0291eb2aa252298a769b04d075e4a9d747ff7264
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: fd7127bf6a6b623c045fd675fdae5af8e4d8c346
 

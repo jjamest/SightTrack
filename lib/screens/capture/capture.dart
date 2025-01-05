@@ -9,6 +9,48 @@ import 'package:sighttrack_app/models/photo_marker.dart';
 import 'package:sighttrack_app/screens/capture/review_capture.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
+class CaptureScreenHandler extends StatefulWidget {
+  const CaptureScreenHandler({super.key, this.camera});
+
+  final CameraDescription? camera;
+
+  @override
+  State<CaptureScreenHandler> createState() => _CaptureScreenHandlerState();
+}
+
+class _CaptureScreenHandlerState extends State<CaptureScreenHandler> {
+  @override
+  Widget build(BuildContext context) {
+    return widget.camera == null
+        ? Scaffold(
+            body: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.warning, color: Colors.white, size: 150),
+                  SizedBox(height: 10),
+                  Text(
+                    'No camera found',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  Text(
+                    'Assuming in emulator and debug mode',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    'If this is not the case, please contact support',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            backgroundColor: Colors.black,
+          )
+        : CaptureScreen(camera: widget.camera!);
+  }
+}
+
 class CaptureScreen extends StatefulWidget {
   const CaptureScreen({super.key, required this.camera});
 
