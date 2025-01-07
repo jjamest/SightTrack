@@ -1,7 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/aws/dynamo.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/screens/upload/upload_view.dart';
 
 class UploadGalleryScreen extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:sighttrack_app/logging.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/settings.dart';
 
 Future<void> savePhotoMarker(PhotoMarker photoMarker) async {

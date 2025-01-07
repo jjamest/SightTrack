@@ -11,6 +11,7 @@ class CustomModernTextField extends StatelessWidget {
   final TextInputAction?
       textInputAction; // Optional for customizing input actions
   final ValueChanged<String>? onChanged; // Allow onChanged callback
+  final bool? enabled;
 
   const CustomModernTextField({
     super.key,
@@ -22,33 +23,32 @@ class CustomModernTextField extends StatelessWidget {
     this.inputFormatters,
     this.textInputAction,
     this.onChanged,
+    this.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: TextField(
-        obscureText: obscureText ?? false,
-        controller: controller,
-        keyboardType: keyboardType, // Use the keyboardType property
-        inputFormatters: inputFormatters, // Apply input formatters
-        textInputAction: textInputAction, // Pass textInputAction if provided
-        onChanged: onChanged, // Trigger onChanged if provided
-        decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
-          ),
-          fillColor: Colors.grey.shade200,
-          filled: true,
-          labelText: labelText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey[500]),
+    return TextField(
+      enabled: enabled ?? true,
+      obscureText: obscureText ?? false,
+      controller: controller,
+      keyboardType: keyboardType, // Use the keyboardType property
+      inputFormatters: inputFormatters, // Apply input formatters
+      textInputAction: textInputAction, // Pass textInputAction if provided
+      onChanged: onChanged, // Trigger onChanged if provided
+      decoration: InputDecoration(
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400),
+        ),
+        fillColor: Colors.grey.shade200,
+        filled: true,
+        labelText: labelText,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        hintText: hintText,
+        hintStyle: TextStyle(color: Colors.grey[500]),
       ),
     );
   }

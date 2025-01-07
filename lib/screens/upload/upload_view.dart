@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/widgets/comments_widget.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 

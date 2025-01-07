@@ -6,7 +6,7 @@ import 'package:sighttrack_app/aws/dynamo.dart';
 import 'package:sighttrack_app/components/button.dart';
 import 'package:sighttrack_app/components/success.dart';
 import 'package:sighttrack_app/components/text_box.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 
 class ReviewCaptureScreen extends StatefulWidget {

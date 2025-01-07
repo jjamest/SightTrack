@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sighttrack_app/aws/storage.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/screens/capture/review_capture.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 

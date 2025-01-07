@@ -46,10 +46,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>We need access to your camera for photo recognition.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need to access microphone for video audio.</string>
+	<string>We need access to your camera for photo recognition and photo uploads</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need access to your location to show your position on the map.</string>
+	<string>We need access to your location to show your position on the map and to add information to your photo markers. Your location is only recorded once you upload a photo marker.</string>
 </dict>
 </plist>

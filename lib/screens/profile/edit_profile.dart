@@ -1,13 +1,14 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack_app/components/button.dart';
-import 'package:sighttrack_app/components/small_button.dart';
 import 'package:sighttrack_app/components/success.dart';
 import 'package:sighttrack_app/components/text_field_modern.dart';
+import 'package:sighttrack_app/design.dart';
 import 'package:sighttrack_app/logging.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/screens/profile/change_password.dart';
 import 'package:sighttrack_app/screens/profile/confirm_email.dart';
+import 'package:sighttrack_app/screens/profile/delete_account.dart';
 import 'package:sighttrack_app/util/error_message.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -78,7 +79,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     switch (result.nextStep.updateAttributeStep) {
       case AuthUpdateAttributeStep.confirmAttributeWithCode:
         final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
-        // handleCodeDelivery(codeDeliveryDetails);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -104,13 +104,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // void handleCodeDelivery(AuthCodeDeliveryDetails codeDeliveryDetails) {
-  //   logger.d(
-  //     'A confirmation code has been sent to ${codeDeliveryDetails.destination}. '
-  //     'Please check your ${codeDeliveryDetails.deliveryMedium.name} for the code.',
-  //   );
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -132,41 +125,101 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Center(
               child: Stack(
                 children: [
-                  Column(
-                    children: [
-                      const SizedBox(height: 60),
-                      const Icon(Icons.person, size: 120),
-                      const SizedBox(height: 10),
-                      Text(
-                        username ?? 'Loading...',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: Looks.pagePadding,
+                    child: Column(
+                      children: [
+                        const Icon(Icons.person, size: 120),
+                        const SizedBox(height: 10),
+                        Text(
+                          username ?? 'Loading...',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      CustomModernTextField(
-                        controller: emailController,
-                        labelText: 'Email',
-                        hintText: email ?? 'Loading...',
-                        obscureText: false,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 35),
-                      CustomSmallButton(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ChangePasswordScreen()),
-                          );
-                        },
-                        label: 'Change Password',
-                      ),
-                      const SizedBox(height: 125),
-                      CustomButton(onTap: onSaveChanges, label: "Save changes"),
-                    ],
+                        const SizedBox(height: 20),
+                        CustomModernTextField(
+                          controller: emailController,
+                          labelText: 'Email',
+                          hintText: email ?? 'Loading...',
+                          obscureText: false,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 35),
+                        CustomModernTextField(
+                          controller: emailController,
+                          labelText: 'Password',
+                          hintText: '',
+                          obscureText: true,
+                          enabled: false,
+                        ),
+                        GestureDetector(
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ChangePasswordScreen()),
+                                );
+                              },
+                              child: Text('Change Password')),
+                        ),
+
+                        // Danger zone
+                        const SizedBox(height: 60),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.warning_rounded,
+                              color: Colors.red,
+                              size: 35,
+                            ),
+                            const SizedBox(width: 5),
+                            Text("Danger Zone",
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 20))
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                          child: Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DeleteAccountScreen()));
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.person, color: Colors.red),
+                                    const SizedBox(width: 5),
+                                    Text("Delete account",
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                                child: Text(
+                                  "By deleting your account, you delete all references to you. Meaning your uploads, comments, or any other app interactions will still exist; however, they will then belong to Deleted Account, not you",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 125),
+                        CustomButton(
+                            onTap: onSaveChanges, label: "Save changes"),
+                      ],
+                    ),
                   ),
                 ],
               ),

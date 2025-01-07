@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sighttrack_app/aws/dynamo.dart';
-import 'package:sighttrack_app/models/photo_marker.dart';
+import 'package:sighttrack_app/models/photomarker.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
 import 'package:sighttrack_app/screens/upload/upload_view.dart';

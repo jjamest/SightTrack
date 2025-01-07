@@ -1,9 +1,7 @@
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter/material.dart';
-
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-
 import 'package:sighttrack_app/amplify_outputs.dart';
 import 'package:sighttrack_app/navigation_bar.dart';
 
@@ -21,7 +19,6 @@ Future<void> configureAmplify() async {
   try {
     await Amplify.addPlugin(AmplifyAuthCognito());
     await Amplify.configure(amplifyConfig);
-    safePrint('Successfully configured');
   } on Exception catch (e) {
     safePrint('Error configuring Amplify: $e');
   }
@@ -45,6 +42,7 @@ class App extends StatelessWidget {
         builder: Authenticator.builder(),
         title: 'SightTrack',
         home: CustomNavigationBar(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
