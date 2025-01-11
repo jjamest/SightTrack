@@ -1,9 +1,9 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/components/button.dart';
-import 'package:sighttrack_app/components/text_field_modern.dart';
-import 'package:sighttrack_app/design.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:sighttrack_app/components/buttons.dart";
+import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/design.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -55,13 +55,16 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                       style: TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     const SizedBox(height: 30),
-                    CustomModernTextField(
-                        controller: confirmDeletionController,
-                        labelText: "Confirm account deletion",
-                        hintText: "Type 'confirm' to delete your account"),
+                    LargeTextField(
+                      controller: confirmDeletionController,
+                      labelText: "Confirm account deletion",
+                      hintText: "Type 'confirm' to delete your account",
+                    ),
                     const SizedBox(height: 30),
-                    CustomButton(
-                        onTap: onDeleteAccount, label: "Delete Account"),
+                    LargeButton(
+                      onTap: onDeleteAccount,
+                      label: "Delete Account",
+                    ),
                   ],
                 ),
               ),

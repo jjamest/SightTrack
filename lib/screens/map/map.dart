@@ -1,33 +1,30 @@
-import 'dart:math' as math;
+import "dart:math" as math;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:logger/logger.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:sighttrack_app/aws/dynamo.dart';
-import 'package:sighttrack_app/models/photomarker.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
-import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
-import 'package:sighttrack_app/screens/upload/upload_view.dart';
-import 'package:sighttrack_app/util/graphics.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:geolocator/geolocator.dart";
+import "package:google_maps_flutter/google_maps_flutter.dart";
+import "package:permission_handler/permission_handler.dart";
+import "package:sighttrack_app/logging.dart";
+import "package:sighttrack_app/services/photomarker_service.dart";
+import "package:sighttrack_app/models/photomarker.dart";
+import "package:sighttrack_app/navigation_bar.dart";
+import "package:sighttrack_app/screens/upload/upload_gallery.dart";
+import "package:sighttrack_app/screens/upload/upload_view.dart";
+import "package:sighttrack_app/util/graphics.dart";
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation;
   bool isLoading = true;
-
   Set<Marker> markers = {};
-
-  final Logger logger = Logger();
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -77,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         isLoading = true;
       });
 
-      final Uint8List? icon = await getBytesFromAsset('assets/marker.png', 48);
+      final Uint8List? icon = await getBytesFromAsset("assets/marker.png", 48);
 
       const double gridSize = 0.0005; // Grid size in latitude/longitude degrees
       const double maxOffset = 0.00015; // Maximum random offset in degrees
@@ -111,20 +108,22 @@ class _HomeScreenState extends State<HomeScreen> {
             marker.longitude + randomLngOffset,
           );
 
-          newMarkers.add(Marker(
-            markerId: MarkerId(marker.photoId),
-            position: adjustedPosition,
-            icon: BitmapDescriptor.bytes(icon!),
-            onTap: () {
-              // showMarkerInfo(marker);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UploadViewScreen(photoMarker: marker),
-                ),
-              );
-            },
-          ));
+          newMarkers.add(
+            Marker(
+              markerId: MarkerId(marker.photoId),
+              position: adjustedPosition,
+              icon: BitmapDescriptor.bytes(icon!),
+              onTap: () {
+                // showMarkerInfo(marker);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadViewScreen(photoMarker: marker),
+                  ),
+                );
+              },
+            ),
+          );
         }
       }
 
@@ -133,10 +132,12 @@ class _HomeScreenState extends State<HomeScreen> {
         markers = newMarkers;
       });
     } catch (e) {
-      logger.e('Error loading markers: $e');
+      logger.e("Error loading markers: $e");
 
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const CustomNavigationBar()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CustomNavigationBar()),
+      );
     }
   }
 
@@ -144,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String getGridKey(double latitude, double longitude, double gridSize) {
     int latGrid = (latitude / gridSize).floor();
     int lngGrid = (longitude / gridSize).floor();
-    return '$latGrid:$lngGrid';
+    return "$latGrid:$lngGrid";
   }
 
   void onMapCreated(GoogleMapController controller) {
@@ -188,22 +189,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   compassEnabled: false,
                   markers: markers,
                   mapType: MapType.satellite,
+                  myLocationButtonEnabled: false,
                 ),
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton(
+              heroTag: "my_location_fab",
+              backgroundColor: Colors.teal,
+              child: Icon(Icons.my_location, color: Colors.white),
+              onPressed: () async {
+                // Replace default GoogleMap myLocation button
+                mapController.animateCamera(
+                  CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                      target: currentLocation,
+                      zoom: 14,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           Positioned(
             top: 50.0,
             left: 20.0,
             child: FloatingActionButton(
+              heroTag: "gallery_fab",
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const UploadGalleryScreen()),
+                    builder: (context) => const UploadGalleryScreen(),
+                  ),
                 );
               },
               backgroundColor: Colors.teal,
-              elevation: 4.0,
               child: const Icon(
-                Icons.photo_library,
+                Icons.image,
                 color: Colors.white,
               ),
             ),

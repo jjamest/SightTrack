@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import "package:flutter/material.dart";
+import "package:flutter/services.dart" show rootBundle;
 
 class TermsAndConditionsScreen extends StatefulWidget {
   const TermsAndConditionsScreen({super.key});
@@ -21,7 +21,7 @@ class TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
   Future<void> loadTerms() async {
     try {
       // Load the terms.txt file from the assets folder
-      final content = await rootBundle.loadString('assets/terms.txt');
+      final content = await rootBundle.loadString("assets/terms.txt");
       setState(() {
         termsContent = content;
       });

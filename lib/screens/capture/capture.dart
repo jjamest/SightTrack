@@ -1,13 +1,13 @@
-import 'dart:typed_data';
+import "dart:typed_data";
 
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:sighttrack_app/aws/storage.dart';
-import 'package:sighttrack_app/models/photomarker.dart';
-import 'package:sighttrack_app/screens/capture/review_capture.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:camera/camera.dart";
+import "package:flutter/material.dart";
+import "package:geolocator/geolocator.dart";
+import "package:sighttrack_app/services/upload_service.dart";
+import "package:sighttrack_app/models/photomarker.dart";
+import "package:sighttrack_app/screens/capture/review_capture.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class CaptureScreenHandler extends StatefulWidget {
   const CaptureScreenHandler({super.key, this.camera});
@@ -23,23 +23,23 @@ class _CaptureScreenHandlerState extends State<CaptureScreenHandler> {
   Widget build(BuildContext context) {
     return widget.camera == null
         ? Scaffold(
-            body: const Center(
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.warning, color: Colors.white, size: 150),
                   SizedBox(height: 10),
                   Text(
-                    'No camera found',
+                    "No camera found",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                   Text(
-                    'Assuming in emulator and debug mode',
+                    "Assuming in emulator and debug mode",
                     style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(height: 30),
                   Text(
-                    'If this is not the case, please contact support',
+                    "If this is not the case, please contact support",
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
@@ -110,7 +110,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
           username = user.username;
         }).catchError((e) {
           if (!mounted) return;
-          showErrorMessage(context, 'Error fetching username: $e');
+          showErrorMessage(context, "Error fetching username: $e");
         });
 
         // Get user position via Geolocator
@@ -120,12 +120,12 @@ class _CaptureScreenState extends State<CaptureScreen> {
 
         // Step 3: Create Photomarker object with metadata
         final photoMarker = PhotoMarker(
-          photoId: presignedData['object_key'],
+          photoId: presignedData["object_key"],
           userId: username!,
           time: DateTime.now(),
           latitude: position.latitude,
           longitude: position.longitude,
-          imageUrl: presignedData['url'],
+          imageUrl: presignedData["url"],
         );
 
         // Step 4 moved to review_upload.dart
@@ -149,7 +149,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
         isLoading = false;
         isFrozen = false;
       });
-      showErrorMessage(context, 'Error capturing image: $e');
+      showErrorMessage(context, "Error capturing image: $e");
     }
   }
 

@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
-class CustomListTile extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const CustomListTile({
+class ListTileAndIcon extends StatelessWidget {
+  const ListTileAndIcon({
     super.key,
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
   });
+
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {

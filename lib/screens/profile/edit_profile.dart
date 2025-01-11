@@ -1,15 +1,15 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/components/button.dart';
-import 'package:sighttrack_app/components/success.dart';
-import 'package:sighttrack_app/components/text_field_modern.dart';
-import 'package:sighttrack_app/design.dart';
-import 'package:sighttrack_app/logging.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
-import 'package:sighttrack_app/screens/profile/change_password.dart';
-import 'package:sighttrack_app/screens/profile/confirm_email.dart';
-import 'package:sighttrack_app/screens/profile/delete_account.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:sighttrack_app/components/buttons.dart";
+import "package:sighttrack_app/widgets/success.dart";
+import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/design.dart";
+import "package:sighttrack_app/logging.dart";
+import "package:sighttrack_app/navigation_bar.dart";
+import "package:sighttrack_app/screens/profile/change_password.dart";
+import "package:sighttrack_app/screens/profile/confirm_email.dart";
+import "package:sighttrack_app/screens/profile/delete_account.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -37,14 +37,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
       }).catchError((e) {
         if (!mounted) return;
-        showErrorMessage(context, 'Error fetching username: $e');
+        showErrorMessage(context, "Error fetching username: $e");
       });
 
       // Await the attributes retrieval and extract email
       attributesFuture.then((attributes) {
         final emailAttribute = attributes.firstWhere(
           (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
-          orElse: () => throw Exception('Email not found'),
+          orElse: () => throw Exception("Email not found"),
         );
 
         setState(() {
@@ -53,23 +53,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         emailController.text = email!;
       }).catchError((e) {
         if (!mounted) return;
-        showErrorMessage(context, 'Error fetching email: $e');
+        showErrorMessage(context, "Error fetching email: $e");
       });
     } catch (e) {
       if (!mounted) return;
-      showErrorMessage(context, 'Error: $e');
+      showErrorMessage(context, "Error: $e");
     }
   }
 
   Future<void> onSaveChanges() async {
     try {
       final result = await Amplify.Auth.updateUserAttribute(
-          userAttributeKey: AuthUserAttributeKey.email,
-          value: emailController.text);
+        userAttributeKey: AuthUserAttributeKey.email,
+        value: emailController.text,
+      );
       handleUpdateUserAttributeResult(result);
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorMessage(context, 'Error updating user attribute: ${e.message}');
+      showErrorMessage(context, "Error updating user attribute: ${e.message}");
     }
   }
 
@@ -83,8 +84,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => ConfirmEmailScreen(
-                destination: codeDeliveryDetails.destination,
-                deliveryMedium: codeDeliveryDetails.deliveryMedium.name),
+              destination: codeDeliveryDetails.destination,
+              deliveryMedium: codeDeliveryDetails.deliveryMedium.name,
+            ),
           ),
         );
         break;
@@ -93,13 +95,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => const SuccessScreen(
-              text: 'Success',
-              subText: 'Updated email',
+              text: "Success",
+              subText: "Updated email",
               destination: CustomNavigationBar(),
             ),
           ),
         );
-        logger.d('Successfully updated attribute');
+        logger.d("Successfully updated attribute");
         break;
     }
   }
@@ -114,7 +116,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text("Edit Profile"),
       ),
       body: GestureDetector(
         onTap: () {
@@ -132,39 +134,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const Icon(Icons.person, size: 120),
                         const SizedBox(height: 10),
                         Text(
-                          username ?? 'Loading...',
+                          username ?? "Loading...",
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        CustomModernTextField(
+                        LargeTextField(
                           controller: emailController,
-                          labelText: 'Email',
-                          hintText: email ?? 'Loading...',
+                          labelText: "Email",
+                          hintText: email ?? "Loading...",
                           obscureText: false,
                           keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 35),
-                        CustomModernTextField(
+                        LargeTextField(
                           controller: emailController,
-                          labelText: 'Password',
-                          hintText: '',
+                          labelText: "Password",
+                          hintText: "",
                           obscureText: true,
                           enabled: false,
                         ),
                         GestureDetector(
                           child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ChangePasswordScreen()),
-                                );
-                              },
-                              child: Text('Change Password')),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ChangePasswordScreen(),
+                                ),
+                              );
+                            },
+                            child: Text("Change Password"),
+                          ),
                         ),
 
                         // Danger zone
@@ -177,9 +181,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               size: 35,
                             ),
                             const SizedBox(width: 5),
-                            Text("Danger Zone",
-                                style:
-                                    TextStyle(color: Colors.red, fontSize: 20))
+                            Text(
+                              "Danger Zone",
+                              style: TextStyle(color: Colors.red, fontSize: 20),
+                            ),
                           ],
                         ),
                         Padding(
@@ -189,17 +194,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const DeleteAccountScreen()));
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DeleteAccountScreen(),
+                                    ),
+                                  );
                                 },
                                 child: Row(
                                   children: [
                                     Icon(Icons.person, color: Colors.red),
                                     const SizedBox(width: 5),
-                                    Text("Delete account",
-                                        style: TextStyle(color: Colors.red)),
+                                    Text(
+                                      "Delete account",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -208,7 +217,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: Text(
                                   "By deleting your account, you delete all references to you. Meaning your uploads, comments, or any other app interactions will still exist; however, they will then belong to Deleted Account, not you",
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ],
@@ -216,8 +227,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
 
                         const SizedBox(height: 125),
-                        CustomButton(
-                            onTap: onSaveChanges, label: "Save changes"),
+                        LargeButton(
+                          onTap: onSaveChanges,
+                          label: "Save changes",
+                        ),
                       ],
                     ),
                   ),

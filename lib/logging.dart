@@ -1,4 +1,4 @@
-import 'package:logger/logger.dart';
+import "package:logger/logger.dart";
 
 var logger = Logger(
   filter: null, // Use the default LogFilter (-> only log in debug mode)

@@ -1,10 +1,10 @@
-import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:sighttrack_app/screens/capture/capture.dart';
-import 'package:sighttrack_app/screens/data/data.dart';
-import 'package:sighttrack_app/screens/home.dart';
-import 'package:sighttrack_app/screens/profile/profile.dart';
+import "package:camera/camera.dart";
+import "package:flutter/material.dart";
+import "package:google_nav_bar/google_nav_bar.dart";
+import "package:sighttrack_app/screens/capture/capture.dart";
+import "package:sighttrack_app/screens/data/data.dart";
+import "package:sighttrack_app/screens/map/map.dart";
+import "package:sighttrack_app/screens/profile/profile.dart";
 
 class CustomNavigationBar extends StatefulWidget {
   const CustomNavigationBar({super.key});
@@ -29,7 +29,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         camera = null;
       }
       widgetOptions = <Widget>[
-        const HomeScreen(),
+        const MapScreen(),
         CaptureScreenHandler(camera: camera),
         const DataScreen(),
         const ProfileScreen(),
@@ -72,10 +72,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                     });
                   },
                   tabs: const [
-                    GButton(icon: Icons.home, text: 'Home'),
-                    GButton(icon: Icons.camera_alt, text: 'Capture'),
-                    GButton(icon: Icons.analytics, text: 'Data'),
-                    GButton(icon: Icons.person, text: 'Profile'),
+                    GButton(icon: Icons.home, text: "Home"),
+                    GButton(icon: Icons.camera_alt, text: "Capture"),
+                    GButton(icon: Icons.trending_up_sharp, text: "Data"),
+                    GButton(icon: Icons.person, text: "Profile"),
                   ],
                 ),
               ),

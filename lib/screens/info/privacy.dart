@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import "package:flutter/material.dart";
+import "package:flutter/services.dart" show rootBundle;
 
 class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
@@ -20,7 +20,7 @@ class PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Future<void> loadTerms() async {
     try {
       // Load the terms.txt file from the assets folder
-      final content = await rootBundle.loadString('assets/privacy.txt');
+      final content = await rootBundle.loadString("assets/privacy.txt");
       setState(() {
         termsContent = content;
       });

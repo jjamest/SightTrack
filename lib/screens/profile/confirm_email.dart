@@ -1,11 +1,11 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sighttrack_app/components/button.dart';
-import 'package:sighttrack_app/components/success.dart';
-import 'package:sighttrack_app/components/text_field_modern.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:sighttrack_app/components/buttons.dart";
+import "package:sighttrack_app/widgets/success.dart";
+import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/navigation_bar.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class ConfirmEmailScreen extends StatefulWidget {
   const ConfirmEmailScreen({
@@ -38,15 +38,15 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => const SuccessScreen(
-            text: 'Success',
-            subText: 'Your email has been changed',
+            text: "Success",
+            subText: "Your email has been changed",
             destination: CustomNavigationBar(),
           ),
         ),
       );
     } on AuthException {
       if (!mounted) return;
-      showErrorMessage(context, 'Invalid code. Please try again');
+      showErrorMessage(context, "Invalid code. Please try again");
     }
   }
 
@@ -54,7 +54,7 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Confirm Email'),
+        title: const Text("Confirm Email"),
       ),
       body: GestureDetector(
         onTap: () {
@@ -81,7 +81,7 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'A confirmation code has been sent to ${widget.destination}',
+                    "A confirmation code has been sent to ${widget.destination}",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -93,7 +93,7 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
 
                   // Subtext
                   Text(
-                    'Please check your ${widget.deliveryMedium} for the code',
+                    "Please check your ${widget.deliveryMedium} for the code",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade600,
@@ -102,15 +102,15 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
                   ),
                   const SizedBox(height: 40),
 
-                  CustomModernTextField(
+                  LargeTextField(
                     controller: codeController,
-                    labelText: 'Verification code',
-                    hintText: 'Enter code here',
+                    labelText: "Verification code",
+                    hintText: "Enter code here",
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                   const SizedBox(height: 40),
-                  CustomButton(onTap: onVerify, label: 'Verify'),
+                  LargeButton(onTap: onVerify, label: "Verify"),
                 ],
               ),
             ),

@@ -1,12 +1,12 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/components/text_link.dart';
-import 'package:sighttrack_app/screens/info/faq.dart';
-import 'package:sighttrack_app/screens/info/privacy.dart';
-import 'package:sighttrack_app/screens/info/terms.dart';
-import 'package:sighttrack_app/screens/profile/edit_profile.dart';
-import 'package:sighttrack_app/screens/upload/upload_gallery.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/screens/info/faq.dart";
+import "package:sighttrack_app/screens/info/privacy.dart";
+import "package:sighttrack_app/screens/info/terms.dart";
+import "package:sighttrack_app/screens/profile/edit_profile.dart";
+import "package:sighttrack_app/screens/upload/upload_gallery.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -69,13 +69,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }).catchError((e) {
         if (!mounted) return;
-        showErrorMessage(context, 'Error fetching username: $e');
+        showErrorMessage(context, "Error fetching username: $e");
       });
 
       attributesFuture.then((attributes) {
         final emailAttribute = attributes.firstWhere(
           (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
-          orElse: () => throw Exception('Email not found'),
+          orElse: () => throw Exception("Email not found"),
         );
 
         setState(() {
@@ -83,11 +83,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }).catchError((e) {
         if (!mounted) return;
-        showErrorMessage(context, 'Error fetching email: $e');
+        showErrorMessage(context, "Error fetching email: $e");
       });
     } catch (e) {
       if (!mounted) return;
-      showErrorMessage(context, 'Error: $e');
+      showErrorMessage(context, "Error: $e");
     }
   }
 
@@ -100,34 +100,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 120),
             CircleAvatar(
               radius: 60,
               child: Text(
-                username == null ? '' : username![0].toUpperCase(),
+                username == null ? "" : username![0].toUpperCase(),
                 style: TextStyle(fontSize: 40),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              username ?? 'Loading...',
+              username ?? "Loading...",
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
             Text(
-              email ?? 'Loading...', // Replace with user's bio or other info
+              email ?? "Loading...",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 20),
-            CustomTextLink(text: "FAQ", onPressed: onPressFAQ),
+            TextLinkAndIcon(text: "FAQ", onPressed: onPressFAQ),
             const SizedBox(height: 10),
-            CustomTextLink(text: "Terms & Conditions", onPressed: onPressTerms),
+            TextLinkAndIcon(
+              text: "Terms & Conditions",
+              onPressed: onPressTerms,
+            ),
             const SizedBox(height: 10),
-            CustomTextLink(text: "Privacy Policy", onPressed: onPressPrivacy),
+            TextLinkAndIcon(
+              text: "Privacy Policy",
+              onPressed: onPressPrivacy,
+            ),
             const SizedBox(height: 20),
             ListTile(
               title: Row(
@@ -136,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icon(Icons.upload_file, size: 24),
                   const SizedBox(width: 8),
                   Text(
-                    'View Your Uploads',
+                    "View Your Uploads",
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -146,16 +152,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: onEditProfile,
-              child: const Text('Edit Profile'),
+              child: const Text("Edit Profile"),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 await Amplify.Auth.signOut();
               },
-              child: const Text('Logout'),
+              child: const Text("Logout"),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 200),
           ],
         ),
       ),

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/aws/dynamo.dart';
-import 'package:sighttrack_app/components/list_tile.dart';
-import 'package:sighttrack_app/logging.dart';
-import 'package:fl_chart/fl_chart.dart';
+import "package:flutter/material.dart";
+import "package:sighttrack_app/design.dart";
+import "package:sighttrack_app/services/data_service.dart";
+import "package:sighttrack_app/components/lists.dart";
+import "package:sighttrack_app/logging.dart";
+import "package:fl_chart/fl_chart.dart";
 
 class DataScreen extends StatefulWidget {
   const DataScreen({super.key});
@@ -26,10 +27,10 @@ class _DataScreenState extends State<DataScreen> {
       });
     } catch (e, stack) {
       // Concatenate error and stack trace into a single string
-      logger.e('Failed to fetch analysis data: $e $stack');
+      logger.e("Failed to fetch analysis data: $e $stack");
       if (!mounted) return;
       setState(() {
-        errorMessage = 'Failed to load data';
+        errorMessage = "Failed to load data";
         isLoading = false;
       });
     }
@@ -48,7 +49,7 @@ class _DataScreenState extends State<DataScreen> {
       "September",
       "October",
       "November",
-      "December"
+      "December",
     ];
     return months[month - 1];
   }
@@ -64,130 +65,116 @@ class _DataScreenState extends State<DataScreen> {
     DateTime now = DateTime.now();
     String currentMonth = getMonthName(now.month);
 
-    // Using a teal/green color scheme
     final Color accentColor = Colors.teal.shade200;
-    final Color backgroundColor = Colors.teal.shade50;
     const Color textColor = Colors.black87;
 
-    const headerStyle = TextStyle(
-      fontSize: 24,
-      fontWeight: FontWeight.bold,
-      color: textColor,
-    );
-
-    const captionStyle = TextStyle(
-      fontSize: 12,
-      color: Colors.black54,
-    );
-
-    const subHeadStyle = TextStyle(
-      fontSize: 14,
-      color: textColor,
-      fontWeight: FontWeight.w400,
-    );
-
     return Scaffold(
-      body: Container(
-        color: backgroundColor,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(26, 20, 26, 26),
-          child: isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : errorMessage != null
-                  ? Center(
-                      child: Text(
-                        errorMessage!,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 55),
-                          Center(
-                            child: Column(
-                              children: [
-                                Icon(Icons.data_exploration,
-                                    size: 200, color: Colors.teal),
-                                Text("An overview of our trends",
-                                    style: captionStyle),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          Text("Basic statistics", style: headerStyle),
-                          const SizedBox(height: 10),
-                          Column(
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(26, 20, 26, 26),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : errorMessage != null
+                ? Center(
+                    child: Text(
+                      errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 55),
+                        Center(
+                          child: Column(
                             children: [
-                              CustomListTile(
-                                title: "Uploads This $currentMonth",
-                                value:
-                                    "${analysisData!['currentMonthUploads']}",
-                                icon: Icons.upload,
-                                color: Colors.red,
+                              Icon(
+                                Icons.data_exploration,
+                                size: 200,
+                                color: Colors.teal,
                               ),
-                              CustomListTile(
-                                title: "Uploads Last Month",
-                                value:
-                                    "${analysisData!['previousMonthUploads']}",
-                                icon: Icons.upload,
-                                color: Colors.green,
-                              ),
-                              CustomListTile(
-                                title: "Total Uploads",
-                                value: "${analysisData!['totalUploads']}",
-                                icon: Icons.upload,
-                                color: Colors.orange,
-                              ),
-                              Divider(
-                                color: Colors.black,
-                                thickness: 2,
-                              ),
-                              CustomListTile(
-                                title: "Total Users",
-                                value: "${analysisData!['totalUsers']}",
-                                icon: Icons.person,
-                                color: Colors.blue,
-                              ),
-                              CustomListTile(
-                                title: "Time Between Uploads",
-                                value: _formatTimeDuration(
-                                  (analysisData!['timeBetweenUploads'] as num)
-                                      .toInt(),
-                                ),
-                                icon: Icons.timer,
-                                color: Colors.cyan,
-                              ),
-                              const SizedBox(height: 20),
                               Text(
-                                "Uploads/month",
-                                style: TextStyle(fontSize: 20),
+                                "An overview of our trends",
+                                style: Looks.captionStyle,
                               ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(25, 15, 25, 10),
-                                child: _buildMonthlyTrendsChart(
-                                  analysisData!['monthlyTrends'],
-                                  Colors.lightGreen,
-                                ),
-                              )
                             ],
                           ),
-                          Text("Species Statistics", style: headerStyle),
-                          const SizedBox(height: 10),
-                          Text("Common Species", style: subHeadStyle),
-                          _buildCommonSpeciesList(
-                              analysisData!['commonSpecies'], textColor),
-                          const SizedBox(height: 30),
-                          Text("User Leaderboard", style: headerStyle),
-                          const SizedBox(height: 10),
-                          _buildTopUsersList(analysisData!['topUsers'],
-                              subHeadStyle, accentColor),
-                          const SizedBox(height: 40),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 40),
+                        Text("Basic statistics", style: Looks.headerStyle),
+                        const SizedBox(height: 10),
+                        Column(
+                          children: [
+                            ListTileAndIcon(
+                              title: "Uploads This $currentMonth",
+                              value: "${analysisData!['currentMonthUploads']}",
+                              icon: Icons.upload,
+                              color: Colors.red,
+                            ),
+                            ListTileAndIcon(
+                              title: "Uploads Last Month",
+                              value: "${analysisData!['previousMonthUploads']}",
+                              icon: Icons.upload,
+                              color: Colors.green,
+                            ),
+                            ListTileAndIcon(
+                              title: "Total Uploads",
+                              value: "${analysisData!['totalUploads']}",
+                              icon: Icons.upload,
+                              color: Colors.orange,
+                            ),
+                            Divider(
+                              color: Colors.black,
+                              thickness: 2,
+                            ),
+                            ListTileAndIcon(
+                              title: "Total Users",
+                              value: "${analysisData!['totalUsers']}",
+                              icon: Icons.person,
+                              color: Colors.blue,
+                            ),
+                            ListTileAndIcon(
+                              title: "Time Between Uploads",
+                              value: _formatTimeDuration(
+                                (analysisData!["timeBetweenUploads"] as num)
+                                    .toInt(),
+                              ),
+                              icon: Icons.timer,
+                              color: Colors.cyan,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "Uploads/month",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(25, 15, 25, 10),
+                              child: _buildMonthlyTrendsChart(
+                                analysisData!["monthlyTrends"],
+                                Colors.lightGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text("Species Statistics", style: Looks.headerStyle),
+                        const SizedBox(height: 10),
+                        Text("Common Species", style: Looks.subHeadStyle),
+                        _buildCommonSpeciesList(
+                          analysisData!["commonSpecies"],
+                          textColor,
+                        ),
+                        const SizedBox(height: 30),
+                        Text("User Leaderboard", style: Looks.headerStyle),
+                        const SizedBox(height: 10),
+                        _buildTopUsersList(
+                          analysisData!["topUsers"],
+                          Looks.subHeadStyle,
+                          accentColor,
+                        ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
-        ),
+                  ),
       ),
     );
   }
@@ -230,7 +217,9 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   Widget _buildMonthlyTrendsChart(
-      Map<String, dynamic> monthlyData, Color primaryColor) {
+    Map<String, dynamic> monthlyData,
+    Color primaryColor,
+  ) {
     var entries = monthlyData.entries.toList();
     entries.sort((a, b) => a.key.compareTo(b.key));
 
@@ -301,7 +290,10 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   Widget _buildTopUsersList(
-      List<dynamic> topUsers, TextStyle textStyle, Color dividerColor) {
+    List<dynamic> topUsers,
+    TextStyle textStyle,
+    Color dividerColor,
+  ) {
     if (topUsers.isEmpty) {
       return const Center(
         child: Text(
@@ -346,7 +338,7 @@ class _DataScreenState extends State<DataScreen> {
                       const SizedBox(width: 12),
                       // User ID
                       Text(
-                        user['userId'].toString(),
+                        user["userId"].toString(),
                         style: textStyle,
                       ),
                     ],

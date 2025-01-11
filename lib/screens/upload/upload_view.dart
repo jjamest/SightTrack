@@ -1,14 +1,14 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:sighttrack_app/models/photomarker.dart';
-import 'package:sighttrack_app/widgets/comments_widget.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/gestures.dart";
+import "package:flutter/material.dart";
+import "package:geolocator/geolocator.dart";
+import "package:google_maps_flutter/google_maps_flutter.dart";
+import "package:intl/intl.dart";
+import "package:permission_handler/permission_handler.dart";
+import "package:sighttrack_app/models/photomarker.dart";
+import "package:sighttrack_app/widgets/comments.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class UploadViewScreen extends StatefulWidget {
   const UploadViewScreen({super.key, required this.photoMarker});
@@ -23,7 +23,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation;
   final usernameFuture = Amplify.Auth.getCurrentUser();
-  String username = '';
+  String username = "";
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -68,7 +68,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
       });
     }).catchError((e) {
       if (!mounted) return;
-      showErrorMessage(context, 'Error fetching username: $e');
+      showErrorMessage(context, "Error fetching username: $e");
     });
   }
 
@@ -100,7 +100,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'DESCRIPTION',
+                          "DESCRIPTION",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -111,7 +111,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         const SizedBox(height: 4),
                         Text(
                           widget.photoMarker.description!.isEmpty
-                              ? 'Unavailable'
+                              ? "Unavailable"
                               : widget.photoMarker.description!,
                           style: TextStyle(
                             fontSize: 20,
@@ -122,7 +122,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         ),
                         const SizedBox(height: 25),
                         Text(
-                          'LABEL',
+                          "LABEL",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -133,7 +133,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         const SizedBox(height: 4),
                         Text(
                           widget.photoMarker.label!.isEmpty
-                              ? 'Unavailable'
+                              ? "Unavailable"
                               : widget.photoMarker.label!,
                           style: TextStyle(
                             fontSize: 20,
@@ -144,7 +144,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         ),
                         const SizedBox(height: 25),
                         Text(
-                          'DATE',
+                          "DATE",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -154,7 +154,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          DateFormat('yyyy-MM-dd')
+                          DateFormat("yyyy-MM-dd")
                               .format(widget.photoMarker.time.toLocal()),
                           style: TextStyle(
                             fontSize: 20,
@@ -165,7 +165,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         ),
                         const SizedBox(height: 25),
                         Text(
-                          'UPLOADED BY',
+                          "UPLOADED BY",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -195,7 +195,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         const SizedBox(height: 25),
                         Center(
                           child: Text(
-                            'MORE INFORMATION',
+                            "MORE INFORMATION",
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -208,7 +208,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                         const SizedBox(height: 15),
                         Center(
                           child: Text(
-                            'Photo ID: ${widget.photoMarker.photoId}',
+                            "Photo ID: ${widget.photoMarker.photoId}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -239,14 +239,15 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                                   widget.photoMarker.latitude,
                                   widget.photoMarker.longitude,
                                 ),
-                              )
+                              ),
                             },
                             compassEnabled: false,
                             myLocationButtonEnabled: false,
                             // Add gestureRecognizers to ensure the map can handle pan/zoom gestures:
                             gestureRecognizers: {
                               Factory<OneSequenceGestureRecognizer>(
-                                  () => EagerGestureRecognizer()),
+                                () => EagerGestureRecognizer(),
+                              ),
                             },
                           ),
                         ),

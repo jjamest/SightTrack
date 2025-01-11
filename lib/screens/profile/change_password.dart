@@ -1,10 +1,10 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/components/button.dart';
-import 'package:sighttrack_app/components/success.dart';
-import 'package:sighttrack_app/components/text_field_modern.dart';
-import 'package:sighttrack_app/navigation_bar.dart';
-import 'package:sighttrack_app/util/error_message.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:sighttrack_app/components/buttons.dart";
+import "package:sighttrack_app/widgets/success.dart";
+import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/navigation_bar.dart";
+import "package:sighttrack_app/util/error_message.dart";
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -35,15 +35,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => SuccessScreen(
-              text: 'Success',
-              subText: 'Your password has been changed',
-              destination: CustomNavigationBar()),
+            text: "Success",
+            subText: "Your password has been changed",
+            destination: CustomNavigationBar(),
+          ),
         ),
         (route) => false, // Removes all previous routes
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showErrorMessage(context, 'Error updating password: ${e.message}');
+      showErrorMessage(context, "Error updating password: ${e.message}");
     }
   }
 
@@ -51,7 +52,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Change Password'),
+        title: Text("Change Password"),
       ),
       body: GestureDetector(
         onTap: () {
@@ -65,40 +66,43 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   Column(
                     children: [
                       const SizedBox(height: 40),
-                      CustomModernTextField(
+                      LargeTextField(
                         controller: currentPasswordController,
-                        labelText: 'Current Password',
-                        hintText: 'Type your current password',
+                        labelText: "Current Password",
+                        hintText: "Type your current password",
                         obscureText: true,
                       ),
                       const SizedBox(height: 40),
-                      CustomModernTextField(
+                      LargeTextField(
                         controller: newPasswordController,
-                        labelText: 'New Password',
-                        hintText: 'Type your new password',
+                        labelText: "New Password",
+                        hintText: "Type your new password",
                         obscureText: true,
                       ),
                       const SizedBox(height: 40),
-                      CustomModernTextField(
+                      LargeTextField(
                         controller: confirmPasswordController,
-                        labelText: 'Confirm Password',
-                        hintText: 'Confirm your password',
+                        labelText: "Confirm Password",
+                        hintText: "Confirm your password",
                         obscureText: true,
                       ),
                       const SizedBox(height: 40),
-                      CustomButton(
+                      LargeButton(
                         onTap: () {
                           if (newPasswordController.text ==
                               confirmPasswordController.text) {
                             updatePassword(
-                                oldPassword: currentPasswordController.text,
-                                newPassword: newPasswordController.text);
+                              oldPassword: currentPasswordController.text,
+                              newPassword: newPasswordController.text,
+                            );
                           } else {
                             showErrorMessage(
-                                context, 'The passwords must match!');
+                              context,
+                              "The passwords must match!",
+                            );
                           }
                         },
-                        label: 'Change Password',
+                        label: "Change Password",
                       ),
                     ],
                   ),

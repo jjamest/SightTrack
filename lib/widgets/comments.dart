@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/models/comment.dart';
-import 'package:sighttrack_app/services/comment_service.dart';
+import "package:flutter/material.dart";
+import "package:sighttrack_app/models/comment.dart";
+import "package:sighttrack_app/services/comment_service.dart";
 
 class CommentsWidget extends StatefulWidget {
   final String photoId;
@@ -39,7 +39,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load comments.';
+        _errorMessage = "Failed to load comments.";
         _isLoading = false;
       });
     }
@@ -50,7 +50,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
     final content = _commentController.text.trim();
     if (content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Comment cannot be empty')),
+        SnackBar(content: Text("Comment cannot be empty")),
       );
       return;
     }
@@ -71,7 +71,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Comment added successfully')),
+          SnackBar(content: Text("Comment added successfully")),
         );
       } else {
         setState(() {
@@ -80,7 +80,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add comment')),
+          SnackBar(content: Text("Failed to add comment")),
         );
       }
     } catch (e) {
@@ -90,7 +90,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding comment')),
+        SnackBar(content: Text("Error adding comment")),
       );
     }
   }
@@ -101,7 +101,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Comments',
+          "Comments",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
@@ -110,7 +110,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
             : _errorMessage != null
                 ? Text(_errorMessage!)
                 : _comments.isEmpty
-                    ? Text('No comments yet. Be the first to comment!')
+                    ? Text("No comments yet. Be the first to comment!")
                     : ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -135,7 +135,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
       title: Text(comment.user),
       subtitle: Text(comment.content),
       trailing: Text(
-        '${comment.time.day}/${comment.time.month}/${comment.time.year}',
+        "${comment.time.day}/${comment.time.month}/${comment.time.year}",
         style: TextStyle(fontSize: 12, color: Colors.grey),
       ),
     );
@@ -147,14 +147,14 @@ class CommentsWidgetState extends State<CommentsWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Add a Comment',
+          "Add a Comment",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 5),
         TextField(
           controller: _commentController,
           decoration: InputDecoration(
-            hintText: 'Enter your comment',
+            hintText: "Enter your comment",
             border: OutlineInputBorder(),
           ),
           minLines: 1,
@@ -174,7 +174,7 @@ class CommentsWidgetState extends State<CommentsWidget> {
                       strokeWidth: 2,
                     ),
                   )
-                : Text('Submit'),
+                : Text("Submit"),
           ),
         ),
       ],

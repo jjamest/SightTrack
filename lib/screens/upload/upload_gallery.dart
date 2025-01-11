@@ -1,8 +1,8 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:sighttrack_app/aws/dynamo.dart';
-import 'package:sighttrack_app/models/photomarker.dart';
-import 'package:sighttrack_app/screens/upload/upload_view.dart';
+import "package:amplify_flutter/amplify_flutter.dart";
+import "package:flutter/material.dart";
+import "package:sighttrack_app/services/photomarker_service.dart";
+import "package:sighttrack_app/models/photomarker.dart";
+import "package:sighttrack_app/screens/upload/upload_view.dart";
 
 class UploadGalleryScreen extends StatefulWidget {
   const UploadGalleryScreen({super.key, this.global = true});
@@ -40,7 +40,7 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
         isLoading = false; // Mark as loaded
       });
     } catch (e) {
-      debugPrint('Error loading images: $e');
+      debugPrint("Error loading images: $e");
       if (!mounted) return;
       setState(() {
         isLoading = false;
@@ -64,7 +64,8 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator()) // Loading indicator
+              child: CircularProgressIndicator(),
+            ) // Loading indicator
           : Padding(
               padding: const EdgeInsets.all(8.0),
               child: photoMarkers.isEmpty
@@ -91,7 +92,8 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UploadViewScreen(
-                                    photoMarker: photoMarkers[index]),
+                                  photoMarker: photoMarkers[index],
+                                ),
                               ),
                             );
                           },
@@ -102,33 +104,38 @@ class _UploadGalleryScreenState extends State<UploadGalleryScreen> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12.0),
-                              child: Image.network(
-                                photoMarkers[index].imageUrl,
-                                fit: BoxFit.cover,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child; // Image loaded
-                                  }
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                          .expectedTotalBytes ??
-                                                      1)
-                                              : null,
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                    child: Icon(Icons.error, color: Colors.red),
-                                  );
-                                },
+                              child: Hero(
+                                tag: photoMarkers[index]
+                                    .photoId, // Ensure this is a unique identifier
+                                child: Image.network(
+                                  photoMarkers[index].imageUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child; // Image loaded
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                (loadingProgress
+                                                        .expectedTotalBytes ??
+                                                    1)
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Center(
+                                      child:
+                                          Icon(Icons.error, color: Colors.red),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),

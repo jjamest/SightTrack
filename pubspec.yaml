@@ -2,7 +2,7 @@ name: sighttrack_app
 description: "Track your environment"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -46,6 +46,8 @@ dependencies:
   amplify_auth_cognito: ^2.5.0
   amplify_authenticator: ^2.3.1
   fl_chart: ^0.69.2
+  image_picker: ^1.1.2
+  path_provider: ^2.1.5
 
 flutter_icons:
   image_path: "assets/icon.jpg"
@@ -67,7 +69,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -13,19 +13,19 @@ class Comment {
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      commentId: map['commentId'] ?? '',
-      user: map['user'] ?? '',
-      time: DateTime.parse(map['time'] ?? DateTime.now().toIso8601String()),
-      content: map['content'] ?? '',
+      commentId: map["commentId"] ?? "",
+      user: map["user"] ?? "",
+      time: DateTime.parse(map["time"] ?? DateTime.now().toIso8601String()),
+      content: map["content"] ?? "",
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'commentId': commentId,
-      'user': user,
-      'time': time.toIso8601String(),
-      'content': content,
+      "commentId": commentId,
+      "user": user,
+      "time": time.toIso8601String(),
+      "content": content,
     };
   }
 }
