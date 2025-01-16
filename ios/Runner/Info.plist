@@ -45,6 +45,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone for photo uploads. Audio is not needed for the app, but is required by our photo capture library</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera for photo recognition and photo uploads</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -111,12 +111,14 @@ class _DataScreenState extends State<DataScreen> {
                               icon: Icons.upload,
                               color: Colors.red,
                             ),
+                            const SizedBox(height: 5),
                             ListTileAndIcon(
                               title: "Uploads Last Month",
                               value: "${analysisData!['previousMonthUploads']}",
                               icon: Icons.upload,
                               color: Colors.green,
                             ),
+                            const SizedBox(height: 5),
                             ListTileAndIcon(
                               title: "Total Uploads",
                               value: "${analysisData!['totalUploads']}",
@@ -124,8 +126,8 @@ class _DataScreenState extends State<DataScreen> {
                               color: Colors.orange,
                             ),
                             Divider(
-                              color: Colors.black,
-                              thickness: 2,
+                              color: Colors.green,
+                              thickness: 3,
                             ),
                             ListTileAndIcon(
                               title: "Total Users",
@@ -133,6 +135,7 @@ class _DataScreenState extends State<DataScreen> {
                               icon: Icons.person,
                               color: Colors.blue,
                             ),
+                            const SizedBox(height: 5),
                             ListTileAndIcon(
                               title: "Time Between Uploads",
                               value: _formatTimeDuration(
@@ -225,8 +228,10 @@ class _DataScreenState extends State<DataScreen> {
 
     List<BarChartGroupData> barGroups = [];
     int x = 0;
+    double maxY = 0; //initialize maxY shown in the bar chart
     for (var entry in entries) {
       double yValue = double.tryParse(entry.value.toString()) ?? 0.0;
+      if (yValue > maxY) maxY = yValue; //set it equal to yvalue first
       barGroups.add(
         BarChartGroupData(
           x: x,
@@ -242,6 +247,8 @@ class _DataScreenState extends State<DataScreen> {
       );
       x++;
     }
+    maxY += maxY *
+        0.1; // Add to the maxY value to make the chart show more space on the Y-axis
 
     return AspectRatio(
       aspectRatio: 1.5,
@@ -249,13 +256,14 @@ class _DataScreenState extends State<DataScreen> {
         BarChartData(
           borderData: FlBorderData(show: false),
           barGroups: barGroups,
+          maxY: maxY,
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
                 // Use a double interval
-                interval: 5.0,
+                interval: maxY / 5,
                 getTitlesWidget: (value, meta) {
                   return Text(
                     "${value.toInt()}",
@@ -283,7 +291,28 @@ class _DataScreenState extends State<DataScreen> {
             rightTitles: AxisTitles(),
             topTitles: AxisTitles(),
           ),
-          gridData: FlGridData(show: false),
+          gridData: FlGridData(show: true),
+
+          // Show data above each bar
+          barTouchData: BarTouchData(
+            touchTooltipData: BarTouchTooltipData(
+              fitInsideHorizontally: true,
+              fitInsideVertically: true,
+              getTooltipColor: (BarChartGroupData group) =>
+                  Colors.teal.shade100,
+              tooltipPadding: const EdgeInsets.all(2),
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return BarTooltipItem(
+                  rod.toY.toString(), // The value to be displayed
+                  const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 8,
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

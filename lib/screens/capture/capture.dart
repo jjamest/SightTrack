@@ -67,9 +67,18 @@ class _CaptureScreenState extends State<CaptureScreen> {
   bool isLoading = false;
   bool isFrozen = false;
 
-  void initializeCamera() {
+  double zoomLevel = 1.0; // Current zoom level
+  double maxZoomLevel = 1.0; // Maximum zoom level supported by the camera
+  double baseZoomLevel = 1.0; // Base zoom level for pinch gesture handling
+
+  void initializeCamera() async {
     controller = CameraController(widget.camera, ResolutionPreset.high);
     initializeControllerFuture = controller.initialize();
+
+    // Get the maximum zoom level supported by the camera
+    await initializeControllerFuture;
+    maxZoomLevel = await controller.getMaxZoomLevel();
+    setState(() {}); // Update the UI to reflect the maxZoomLevel
   }
 
   void onCapture() async {
@@ -175,14 +184,31 @@ class _CaptureScreenState extends State<CaptureScreen> {
               future: initializeControllerFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  return CameraPreview(controller);
+                  // Wrap CameraPreview in GestureDetector
+                  return GestureDetector(
+                    onScaleStart: (details) {
+                      baseZoomLevel = zoomLevel;
+                    },
+                    onScaleUpdate: (details) async {
+                      double newZoomLevel = baseZoomLevel * details.scale;
+                      newZoomLevel = newZoomLevel.clamp(
+                        1.0,
+                        maxZoomLevel,
+                      ); // Clamp between 1.0 and maxZoomLevel
+                      setState(() {
+                        zoomLevel = newZoomLevel;
+                      });
+                      await controller.setZoomLevel(zoomLevel);
+                    },
+                    child: CameraPreview(controller),
+                  );
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
               },
             ),
           ),
-          // Capture button in absolute center over the camera preview
+          // Capture button
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

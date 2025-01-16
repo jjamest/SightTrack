@@ -23,9 +23,9 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   late LatLng currentLocation;
+  double currentZoom = 14;
   bool isLoading = true;
   Set<Marker> markers = {};
-
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -97,16 +97,22 @@ class _MapScreenState extends State<MapScreen> {
       for (var gridMarkers in gridMap.values) {
         for (int i = 0; i < gridMarkers.length; i++) {
           PhotoMarker marker = gridMarkers[i];
-
-          // Apply random offsets to distribute markers within the grid cell
-          double randomLatOffset = (random.nextDouble() * 2 - 1) *
-              maxOffset; // Random between -maxOffset and +maxOffset
-          double randomLngOffset = (random.nextDouble() * 2 - 1) * maxOffset;
-
-          LatLng adjustedPosition = LatLng(
-            marker.latitude + randomLatOffset,
-            marker.longitude + randomLngOffset,
+          var adjustedPosition = LatLng(
+            marker.latitude,
+            marker.longitude,
           );
+          if (currentZoom < 14) {
+            // Apply random offsets to distribute markers within the grid cell
+            double randomLatOffset = (random.nextDouble() * 2 - 1) * maxOffset;
+
+            // Random between -maxOffset and +maxOffset
+            double randomLngOffset = (random.nextDouble() * 2 - 1) * maxOffset;
+
+            LatLng adjustedPosition = LatLng(
+              marker.latitude + randomLatOffset,
+              marker.longitude + randomLngOffset,
+            );
+          }
 
           newMarkers.add(
             Marker(
@@ -190,6 +196,13 @@ class _MapScreenState extends State<MapScreen> {
                   markers: markers,
                   mapType: MapType.satellite,
                   myLocationButtonEnabled: false,
+                  onCameraMove: (CameraPosition position) {
+                    // You can also get zoom dynamically here if you prefer
+                    setState(() {
+                      currentZoom:
+                      position.zoom;
+                    });
+                  },
                 ),
           Positioned(
             bottom: 16,
