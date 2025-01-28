@@ -27,7 +27,7 @@ class _DataScreenState extends State<DataScreen> {
       });
     } catch (e, stack) {
       // Concatenate error and stack trace into a single string
-      logger.e("Failed to fetch analysis data: $e $stack");
+      Log.e("Failed to fetch analysis data: $e $stack");
       if (!mounted) return;
       setState(() {
         errorMessage = "Failed to load data";

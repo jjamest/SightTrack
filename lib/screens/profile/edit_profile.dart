@@ -101,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         );
-        logger.d("Successfully updated attribute");
+        Log.d("Successfully updated attribute");
         break;
     }
   }

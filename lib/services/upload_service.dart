@@ -8,17 +8,17 @@ import "package:sighttrack_app/settings.dart";
 Future<Map<String, dynamic>> getPresignedURL() async {
   try {
     final response = await http.get(Uri.parse(ApiConstants.getPresignedUrl));
-    logger.d(response.body);
+    Log.d(response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       return responseData;
     } else {
-      logger.e("Failed to get pre-signed URL: ${response.statusCode}");
+      Log.e("Failed to get pre-signed URL: ${response.statusCode}");
       throw Exception("Failed to get pre-signed URL");
     }
   } catch (e) {
-    logger.e("Error getting pre-signed URL: $e");
+    Log.e("Error getting pre-signed URL: $e");
     rethrow;
   }
 }
@@ -57,16 +57,16 @@ Future<List<dynamic>?> uploadImageToS3(
     final response = await request.send();
 
     if (response.statusCode == 204) {
-      logger.i("Image uploaded as $objectKey");
+      Log.i("Image uploaded as $objectKey");
 
       // Proceed to get labels from the uploaded image
       List<dynamic>? labels = await getLabelsFromAPI(objectKey);
       return labels;
     } else {
-      logger.e("Failed to upload image. Status code: ${response.statusCode}");
+      Log.e("Failed to upload image. Status code: ${response.statusCode}");
     }
   } catch (e) {
-    logger.e("Error uploading image to S3: $e");
+    Log.e("Error uploading image to S3: $e");
   }
   return null;
 }
@@ -79,8 +79,8 @@ Future<List<dynamic>?> getLabelsFromAPI(String objectKey) async {
       body: jsonEncode({"object_key": objectKey}),
     );
 
-    logger.i(response.body);
-    logger.i(objectKey);
+    Log.i(response.body);
+    Log.i(objectKey);
 
     if (response.statusCode == 200) {
       dynamic responseData = jsonDecode(response.body);
@@ -94,7 +94,7 @@ Future<List<dynamic>?> getLabelsFromAPI(String objectKey) async {
         // 'body' is already a Map; use it directly
         data = responseData;
       } else {
-        logger.w(
+        Log.w(
           'Unexpected type for responseData["body"]: ${responseData.runtimeType}',
         );
         return null;
@@ -105,14 +105,15 @@ Future<List<dynamic>?> getLabelsFromAPI(String objectKey) async {
       if (labels != null && labels is List<dynamic>) {
         return labels;
       } else {
-        logger.e("No labels found or invalid data format.");
+        Log.e("No labels found or invalid data format.");
       }
     } else {
-      logger.e("Failed to get labels. Status code: ${response.statusCode}");
-      logger.t("Response body: ${response.body}");
+      Log.e(
+        "Failed to get labels. Status code: ${response.statusCode} | Response body: ${response.body}",
+      );
     }
   } catch (e) {
-    logger.e("Error getting labels: $e");
+    Log.e("Error getting labels: $e");
   }
   return null;
 }

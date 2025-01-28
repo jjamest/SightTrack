@@ -1,14 +1,62 @@
-import "package:logger/logger.dart";
+import "package:flutter/foundation.dart";
+import "package:logging/logging.dart";
 
-var logger = Logger(
-  filter: null, // Use the default LogFilter (-> only log in debug mode)
-  printer: PrettyPrinter(
-    methodCount: 0, // No method chain
-    errorMethodCount: 0, // No method chain for errors
-    lineLength: 120, // Adjust line length if needed
-    colors: false, // Colorful output
-    printEmojis: true, // Emojis are helpful for distinguishing log types
-    dateTimeFormat: DateTimeFormat.none,
-  ),
-  output: null, // Use the default LogOutput (-> send everything to console)
-);
+class Log {
+  static final Logger _logger = Logger("App");
+
+  static void init() {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord record) {
+      final logMessage = "[${record.level.name}] "
+          "[${record.loggerName}] ${record.message}";
+
+      if (kDebugMode) {
+        debugPrintSynchronously(logMessage);
+      }
+
+      if (record.error != null) {
+        if (kDebugMode) {
+          debugPrintSynchronously("Error: ${record.error}");
+        }
+      }
+      if (record.stackTrace != null) {
+        if (kDebugMode) {
+          debugPrintSynchronously("StackTrace: ${record.stackTrace}");
+        }
+      }
+    });
+  }
+
+  static void d(String message, {Object? error, StackTrace? stackTrace}) {
+    _logger.fine(message, error, stackTrace);
+  }
+
+  static void i(String message, {Object? error, StackTrace? stackTrace}) {
+    _logger.info(message, error, stackTrace);
+  }
+
+  static void w(String message, {Object? error, StackTrace? stackTrace}) {
+    _logger.warning(message, error, stackTrace);
+  }
+
+  static void e(String message, {Object? error, StackTrace? stackTrace}) {
+    _logger.severe(message, error, stackTrace);
+  }
+
+  static void critical(
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _logger.shout(message, error, stackTrace);
+  }
+
+  static void logCustom(
+    Level level,
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _logger.log(level, message, error, stackTrace);
+  }
+}

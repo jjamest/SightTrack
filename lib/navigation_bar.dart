@@ -5,6 +5,7 @@ import "package:sighttrack_app/screens/capture/capture.dart";
 import "package:sighttrack_app/screens/data/data.dart";
 import "package:sighttrack_app/screens/map/map.dart";
 import "package:sighttrack_app/screens/profile/profile.dart";
+import "package:sighttrack_app/services/auth_service.dart";
 
 class CustomNavigationBar extends StatefulWidget {
   const CustomNavigationBar({super.key});
@@ -45,6 +46,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     doneInitializing = false;
 
     initializeElements();
+
+    updateUsername(context);
+    updateEmail(context);
+    updateRoles(context);
   }
 
   @override

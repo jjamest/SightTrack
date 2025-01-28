@@ -19,12 +19,12 @@ Future<Comment?> addComment(String photoId, String user, String content) async {
       final commentData = responseData["comment"];
       return Comment.fromMap(commentData);
     } else {
-      logger.e(
+      Log.e(
         "Failed to add comment: ${response.statusCode}\nResponse body: ${response.body}",
       );
     }
   } catch (e) {
-    logger.e("Error adding comment: $e");
+    Log.e("Error adding comment: $e");
   }
   return null;
 }
@@ -47,12 +47,12 @@ Future<List<Comment>?> getComments(String photoId) async {
 
       return commentsJson.map((json) => Comment.fromMap(json)).toList();
     } else {
-      logger.e(
+      Log.e(
         "Failed to retrieve comments: ${response.statusCode}\nResponse body: ${response.body}",
       );
     }
   } catch (e) {
-    logger.e("Error retrieving comments: $e");
+    Log.e("Error retrieving comments: $e");
   }
   return null;
 }

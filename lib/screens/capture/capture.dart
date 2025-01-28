@@ -73,7 +73,10 @@ class _CaptureScreenState extends State<CaptureScreen> {
 
   void initializeCamera() async {
     controller = CameraController(widget.camera, ResolutionPreset.high);
-    initializeControllerFuture = controller.initialize();
+    initializeControllerFuture = controller.initialize().then((_) {
+      if (!mounted) return;
+      setState(() {});
+    });
 
     // Get the maximum zoom level supported by the camera
     await initializeControllerFuture;
@@ -170,8 +173,8 @@ class _CaptureScreenState extends State<CaptureScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
+    controller.dispose();
   }
 
   @override

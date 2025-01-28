@@ -1,12 +1,13 @@
 import "package:amplify_flutter/amplify_flutter.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 import "package:sighttrack_app/components/text.dart";
+import "package:sighttrack_app/models/user_state.dart";
 import "package:sighttrack_app/screens/info/faq.dart";
 import "package:sighttrack_app/screens/info/privacy.dart";
 import "package:sighttrack_app/screens/info/terms.dart";
 import "package:sighttrack_app/screens/profile/edit_profile.dart";
 import "package:sighttrack_app/screens/upload/upload_gallery.dart";
-import "package:sighttrack_app/util/error_message.dart";
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,9 +17,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String? username;
-  String? email;
-
   void onEditProfile() {
     Navigator.push(
       context,
@@ -58,47 +56,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> getCurrentUser() async {
-    try {
-      final usernameFuture = Amplify.Auth.getCurrentUser();
-      final attributesFuture = Amplify.Auth.fetchUserAttributes();
-
-      usernameFuture.then((user) {
-        setState(() {
-          username = user.username;
-        });
-      }).catchError((e) {
-        if (!mounted) return;
-        showErrorMessage(context, "Error fetching username: $e");
-      });
-
-      attributesFuture.then((attributes) {
-        final emailAttribute = attributes.firstWhere(
-          (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
-          orElse: () => throw Exception("Email not found"),
-        );
-
-        setState(() {
-          email = emailAttribute.value;
-        });
-      }).catchError((e) {
-        if (!mounted) return;
-        showErrorMessage(context, "Error fetching email: $e");
-      });
-    } catch (e) {
-      if (!mounted) return;
-      showErrorMessage(context, "Error: $e");
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userState = Provider.of<UserState>(context);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -107,18 +73,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CircleAvatar(
               radius: 60,
               child: Text(
-                username == null ? "" : username![0].toUpperCase(),
+                userState.username[0].toUpperCase(),
                 style: TextStyle(fontSize: 40),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              username ?? "Loading...",
+              userState.username,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
             Text(
-              email ?? "Loading...",
+              userState.email,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),

@@ -27,14 +27,14 @@ Future<void> savePhotoMarker(PhotoMarker photoMarker) async {
 
     // Handle the response
     if (response.statusCode == 200) {
-      logger.i("Photo marker saved");
+      Log.i("Photo marker saved");
     } else {
-      logger.e(
+      Log.e(
         "Error saving metadata: ${response.statusCode} - ${response.body}",
       );
     }
   } catch (e) {
-    logger.e("Error: $e");
+    Log.e("Error: $e");
   }
 }
 
@@ -44,7 +44,7 @@ Future<List<PhotoMarker>> getPhotoMarkers() async {
   if (response.statusCode == 200) {
     final List<dynamic> markersData = json.decode(response.body);
 
-    logger.i("Loaded ${markersData.length} markers from API");
+    Log.i("${markersData.length} photo markers loaded");
     return markersData.map((data) {
       return PhotoMarker.fromMap(data);
     }).toList();
