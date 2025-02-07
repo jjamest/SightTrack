@@ -59,7 +59,12 @@ class SuccessScreen extends StatelessWidget {
               const SizedBox(height: 40),
               LargeButton(
                 onTap: () {
-                  Navigator.pop(context);
+                  // Replace this screen with the destination
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => destination),
+                    (route) => false, // Remove all routes except the new one
+                  );
                 },
                 label: "Go Back",
               ),

@@ -17,6 +17,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // List<String> userRoles = [];
+  // late UserState userState;
+
   void onEditProfile() {
     Navigator.push(
       context,
@@ -52,13 +55,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context) => const UploadGalleryScreen(
           global: false,
         ),
-      ), // Replace with your actual page
+      ),
     );
   }
 
   @override
   void initState() {
     super.initState();
+
+    // initialize();
   }
 
   @override
@@ -87,6 +92,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userState.email,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              userState.roles.join(", "),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.red),
             ),
             const SizedBox(height: 20),
             TextLinkAndIcon(text: "FAQ", onPressed: onPressFAQ),

@@ -1,6 +1,8 @@
 import "package:amplify_flutter/amplify_flutter.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 import "package:sighttrack_app/components/buttons.dart";
+import "package:sighttrack_app/models/user_state.dart";
 import "package:sighttrack_app/widgets/success.dart";
 import "package:sighttrack_app/components/text.dart";
 import "package:sighttrack_app/design.dart";
@@ -20,46 +22,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController emailController = TextEditingController();
-
-  final userFuture = Amplify.Auth.getCurrentUser();
-
-  String? username;
-  String? email;
-
-  Future<void> getCurrentUser() async {
-    try {
-      final attributesFuture = Amplify.Auth.fetchUserAttributes();
-
-      // Await the username retrieval
-      userFuture.then((user) {
-        setState(() {
-          username = user.username;
-        });
-      }).catchError((e) {
-        if (!mounted) return;
-        showErrorMessage(context, "Error fetching username: $e");
-      });
-
-      // Await the attributes retrieval and extract email
-      attributesFuture.then((attributes) {
-        final emailAttribute = attributes.firstWhere(
-          (attr) => attr.userAttributeKey == CognitoUserAttributeKey.email,
-          orElse: () => throw Exception("Email not found"),
-        );
-
-        setState(() {
-          email = emailAttribute.value;
-        });
-        emailController.text = email!;
-      }).catchError((e) {
-        if (!mounted) return;
-        showErrorMessage(context, "Error fetching email: $e");
-      });
-    } catch (e) {
-      if (!mounted) return;
-      showErrorMessage(context, "Error: $e");
-    }
-  }
 
   Future<void> onSaveChanges() async {
     try {
@@ -109,11 +71,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
   }
 
   @override
   Widget build(BuildContext context) {
+    final userState = Provider.of<UserState>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Profile"),
@@ -134,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const Icon(Icons.person, size: 120),
                         const SizedBox(height: 10),
                         Text(
-                          username ?? "Loading...",
+                          userState.username,
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -144,15 +107,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         LargeTextField(
                           controller: emailController,
                           labelText: "Email",
-                          hintText: email ?? "Loading...",
+                          hintText: userState.email,
                           obscureText: false,
                           keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 35),
                         LargeTextField(
-                          controller: emailController,
+                          controller: TextEditingController(),
                           labelText: "Password",
-                          hintText: "",
+                          hintText: "**********",
                           obscureText: true,
                           enabled: false,
                         ),

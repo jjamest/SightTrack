@@ -7,14 +7,21 @@ import "package:sighttrack_app/amplify_outputs.dart";
 import "package:sighttrack_app/logging.dart";
 import "package:sighttrack_app/navigation_bar.dart";
 import "package:sighttrack_app/models/user_state.dart";
-import "package:sighttrack_app/services/auth_service.dart";
+import "package:sighttrack_app/services/user_service.dart";
+import "package:webview_flutter/webview_flutter.dart";
+import "package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart";
 
 void main() async {
-  Log.init();
-
   try {
+    Log.init();
+
     WidgetsFlutterBinding.ensureInitialized();
     await configureAmplify();
+
+    if (WebViewPlatform.instance is! WebKitWebViewPlatform) {
+      WebViewPlatform.instance = WebKitWebViewPlatform();
+    }
+
     runApp(
       ChangeNotifierProvider(
         create: (context) => UserState(),
@@ -75,9 +82,7 @@ void setupAuthHubListener(BuildContext context) {
     switch (event.eventName) {
       case "SIGNED_IN":
         Log.i("User signed in.");
-        updateUsername(context);
-        updateEmail(context);
-        updateRoles(context);
+        updateAll(context);
         break;
 
       case "SIGNED_OUT":

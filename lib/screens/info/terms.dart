@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter/services.dart" show rootBundle;
+import "package:webview_flutter/webview_flutter.dart";
 
 class TermsAndConditionsScreen extends StatefulWidget {
   const TermsAndConditionsScreen({super.key});
@@ -10,42 +10,43 @@ class TermsAndConditionsScreen extends StatefulWidget {
 }
 
 class TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
-  String termsContent = "Loading Terms and Conditions...";
+  late final WebViewController _controller;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadTerms();
-  }
-
-  Future<void> loadTerms() async {
-    try {
-      // Load the terms.txt file from the assets folder
-      final content = await rootBundle.loadString("assets/terms.txt");
-      setState(() {
-        termsContent = content;
-      });
-    } catch (e) {
-      setState(() {
-        termsContent = "Failed to load Terms and Conditions.";
-      });
-    }
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) => setState(() => isLoading = true),
+          onPageFinished: (_) => setState(() => isLoading = false),
+          onNavigationRequest: (request) {
+            if (request.url.startsWith("https://www.sighttrack.org")) {
+              return NavigationDecision.navigate;
+            }
+            return NavigationDecision.prevent;
+          },
+        ),
+      )
+      ..loadRequest(
+        Uri.parse("https://www.sighttrack.org/terms--conditions.html"),
+      );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Terms and Conditions"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Text(
-            termsContent,
-            style: const TextStyle(fontSize: 16),
-          ),
-        ),
+      appBar: AppBar(title: const Text("Terms and Conditions")),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }

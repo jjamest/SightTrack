@@ -9,23 +9,25 @@ class UserState with ChangeNotifier {
   String get email => _email;
   List<String> get roles => _roles;
 
-  void setUsername(String newUsername) {
-    if (_username != newUsername) {
-      _username = newUsername;
-      notifyListeners();
-    }
-  }
+  void updateState({String? username, String? email, List<String>? roles}) {
+    bool hasChanged = false;
 
-  void setEmail(String newEmail) {
-    if (_email != newEmail) {
-      _email = newEmail;
-      notifyListeners();
+    if (username != null && _username != username) {
+      _username = username;
+      hasChanged = true;
     }
-  }
 
-  void setRoles(List<String> newRoles) {
-    if (_roles != newRoles) {
-      _roles = newRoles;
+    if (email != null && _email != email) {
+      _email = email;
+      hasChanged = true;
+    }
+
+    if (roles != null && _roles != roles) {
+      _roles = roles;
+      hasChanged = true;
+    }
+
+    if (hasChanged) {
       notifyListeners();
     }
   }
@@ -34,6 +36,6 @@ class UserState with ChangeNotifier {
     _username = "";
     _email = "";
     _roles = [];
-    notifyListeners(); // Notify widgets that the state has changed
+    notifyListeners();
   }
 }
