@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:sighttrack_app/design.dart";
+import "package:sighttrack_app/screens/admin/make_announcement.dart";
 import "package:sighttrack_app/screens/admin/manage_users.dart";
+import "package:sighttrack_app/screens/moderator/moderator.dart";
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -62,25 +64,19 @@ class _AdminScreenState extends State<AdminScreen> {
                       ),
                     ],
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MakeAnnoucementScreen(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 15),
                 Divider(),
                 const SizedBox(height: 15),
-                ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.report, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Reported Items",
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  onTap: () {},
-                ),
+                ModeratorScreen(),
               ],
             ),
           ),

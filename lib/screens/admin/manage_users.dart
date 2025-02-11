@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:sighttrack_app/design.dart";
 import "package:sighttrack_app/models/app_user.dart";
+import "package:sighttrack_app/screens/admin/edit_user.dart";
 import "package:sighttrack_app/services/cognito_service.dart";
 
 class ManageUsersScreen extends StatefulWidget {
@@ -16,6 +17,8 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
 
   void fetchUsers() async {
     List<AppUser>? temp = await getAllUsers();
+
+    if (!mounted) return;
     setState(() {
       users = temp;
     });
@@ -60,6 +63,10 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                   padding: Looks.pagePadding,
                   child: Column(
                     children: [
+                      Text(
+                        "There are ${users?.length} total users",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
                       const SizedBox(height: 20),
                       users!.isEmpty
                           ? const Text(
@@ -99,14 +106,43 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
         trailing: Wrap(
           spacing: 8, // Space between buttons
           children: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: () {}, // TODO: Implement "Edit User"
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {}, // TODO: Implement "Delete User"
-            ),
+            if (user.groups.contains("Admin"))
+              IconButton(
+                icon: Icon(Icons.admin_panel_settings_rounded),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Admin"),
+                        content: Text(
+                          "This user is an admin, and you cannot modify them",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Closes the dialog
+                            },
+                            child: Text("OK"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            if (!user.groups.contains("Admin"))
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditUserScreen(user: user),
+                    ),
+                  );
+                },
+              ),
           ],
         ),
       ),

@@ -15,7 +15,12 @@ Future<List<AppUser>?> getAllUsers() async {
       },
     );
 
-    Log.i("Fetched all users (Status ${response.statusCode})");
+    Log.i("Fetching users ... Status code ${response.statusCode}");
+
+    if (response.statusCode == 502) {
+      Log.i("Trying to fetch users again");
+      return getAllUsers();
+    }
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -29,11 +34,32 @@ Future<List<AppUser>?> getAllUsers() async {
       }
     } else {
       Log.e(
-        "Failed to retrieve users: ${response.statusCode}\nResponse body: ${response.body}",
+        "Failed to retrieve users: ${response.statusCode} | Response body: ${response.body}",
       );
     }
   } catch (e) {
     Log.e("Error retrieving users: $e");
   }
   return null;
+}
+
+Future<void> updateUserGroups(String username, List<String> groups) async {
+  const String apiUrl = "${ApiConstants.baseURL}/admin/addUserToGroup";
+
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "username": username,
+      "groups": groups,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    Log.i("User groups updated successfully.");
+  } else {
+    Log.e("Failed to update user groups: ${response.body}");
+  }
 }

@@ -22,7 +22,8 @@ class UserState with ChangeNotifier {
       hasChanged = true;
     }
 
-    if (roles != null && _roles != roles) {
+    // Here, ensure that roles are compared correctly.
+    if (roles != null && _roles.toString() != roles.toString()) {
       _roles = roles;
       hasChanged = true;
     }

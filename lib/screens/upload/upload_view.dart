@@ -6,7 +6,11 @@ import "package:geolocator/geolocator.dart";
 import "package:google_maps_flutter/google_maps_flutter.dart";
 import "package:intl/intl.dart";
 import "package:permission_handler/permission_handler.dart";
+import "package:provider/provider.dart";
 import "package:sighttrack_app/models/photomarker.dart";
+import "package:sighttrack_app/models/user_state.dart";
+import "package:sighttrack_app/screens/moderator/report_upload.dart";
+import "package:sighttrack_app/services/photomarker_service.dart";
 import "package:sighttrack_app/widgets/comments.dart";
 import "package:sighttrack_app/util/error_message.dart";
 
@@ -35,18 +39,14 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are permanently denied, handle this by guiding the user to app settings.
       openAppSettings();
       return;
     }
 
-    // If permissions are granted, get the current location.
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
-    double lat = position.latitude;
-    double long = position.longitude;
-    LatLng location = LatLng(lat, long);
+    LatLng location = LatLng(position.latitude, position.longitude);
 
     if (!mounted) return;
     setState(() {
@@ -60,8 +60,6 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
 
   void initialize() async {
     await getLocation();
-
-    // Get the current user for adding comments
     usernameFuture.then((user) {
       setState(() {
         username = user.username;
@@ -78,18 +76,85 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
     initialize();
   }
 
+  /// Opens a confirmation dialog before deleting the photo.
+  Future<void> _confirmDelete() async {
+    bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm Deletion"),
+        content: const Text("Are you sure you want to delete this photo?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != null && confirmed) {
+      try {
+        await deletePhotoMarker(photoId: widget.photoMarker.photoId);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Photo deleted successfully.")),
+        );
+        // Pop this screen and return true to indicate deletion.
+        Navigator.of(context).pop(true);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to delete photo: $e")),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userState = Provider.of<UserState>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View upload"),
+        title: const Text("View Upload"),
+        actions: [
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.flag, color: Colors.red),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ReportUploadScreen(photoMarker: widget.photoMarker),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+          if (userState.roles.contains("Admin"))
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: _confirmDelete,
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Column(
             children: [
               Expanded(
@@ -191,7 +256,7 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                           currentUser: username,
                         ),
                         const SizedBox(height: 25),
-                        Divider(),
+                        const Divider(),
                         const SizedBox(height: 25),
                         Center(
                           child: Text(
@@ -223,6 +288,8 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                           height: 400,
                           width: double.infinity,
                           child: GoogleMap(
+                            key:
+                                UniqueKey(), // Prevents re-creation issues on iOS
                             onMapCreated: onMapCreated,
                             initialCameraPosition: CameraPosition(
                               target: LatLng(
@@ -243,7 +310,6 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                             },
                             compassEnabled: false,
                             myLocationButtonEnabled: false,
-                            // Add gestureRecognizers to ensure the map can handle pan/zoom gestures:
                             gestureRecognizers: {
                               Factory<OneSequenceGestureRecognizer>(
                                 () => EagerGestureRecognizer(),
@@ -256,7 +322,6 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                   ),
                 ),
               ),
-              // const SizedBox(height: 100),
             ],
           ),
         ),

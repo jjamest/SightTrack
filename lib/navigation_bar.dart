@@ -1,5 +1,4 @@
 import "package:camera/camera.dart";
-import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_nav_bar/google_nav_bar.dart";
 import "package:provider/provider.dart";
@@ -57,8 +56,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       tempTabs.add(
         GButton(
           icon: Icons.admin_panel_settings,
-          text: "Admin",
-          iconColor: Colors.orange,
+          iconColor: Colors.red,
           iconActiveColor: Colors.red,
         ),
       );

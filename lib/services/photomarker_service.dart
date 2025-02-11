@@ -52,3 +52,25 @@ Future<List<PhotoMarker>> getPhotoMarkers() async {
     throw Exception("Failed to load photo markers");
   }
 }
+
+/// Deletes a photo marker identified by [photoId] by calling the API endpoint.
+/// Throws an exception if the deletion fails.
+Future<void> deletePhotoMarker({required String photoId}) async {
+  final String url = "${ApiConstants.baseURL}/deletePhotoMarker";
+
+  // Perform the DELETE request.
+  final response = await http.delete(
+    Uri.parse(url),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "photoId": photoId,
+    }),
+  );
+
+  // Check for a successful deletion.
+  if (response.statusCode != 200) {
+    throw Exception("Failed to delete photo: ${response.body}");
+  }
+}
