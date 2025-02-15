@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   amplify_db_common
+  connectivity_plus
   file_selector_windows
   geolocator_windows
   permission_handler_windows

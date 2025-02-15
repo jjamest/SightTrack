@@ -1,0 +1,5 @@
+type UserSettings @model {
+  id: ID!
+  userId: String!
+  randomPhotoOffset: Boolean
+}

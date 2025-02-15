@@ -1,6 +1,6 @@
 import "dart:convert";
 import "package:http/http.dart" as http;
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 /// Submits an announcement with the given [title] and [content].
 ///

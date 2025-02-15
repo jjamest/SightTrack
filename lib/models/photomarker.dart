@@ -10,6 +10,7 @@ class PhotoMarker {
   String? label; // Late
   String? description; // Late
   List<Comment> comments;
+  final Map<String, double>? randomOffset; // New field
 
   PhotoMarker({
     required this.photoId,
@@ -21,13 +22,24 @@ class PhotoMarker {
     this.label,
     this.description,
     this.comments = const [],
+    this.randomOffset,
   });
+
   factory PhotoMarker.fromMap(Map<String, dynamic> map) {
     var commentsFromMap = <Comment>[];
     if (map["comments"] != null) {
       commentsFromMap = List<Map<String, dynamic>>.from(map["comments"])
           .map((commentMap) => Comment.fromMap(commentMap))
           .toList();
+    }
+
+    Map<String, double>? offset;
+    if (map.containsKey("randomOffset") && map["randomOffset"] is Map) {
+      // Expecting a map with keys "lat" and "long"
+      offset = {
+        "lat": double.parse(map["randomOffset"]["lat"].toString()),
+        "long": double.parse(map["randomOffset"]["long"].toString()),
+      };
     }
 
     return PhotoMarker(
@@ -40,6 +52,7 @@ class PhotoMarker {
       label: map["label"],
       description: map["description"],
       comments: commentsFromMap,
+      randomOffset: offset,
     );
   }
 
@@ -54,6 +67,7 @@ class PhotoMarker {
       "label": label,
       "description": description,
       "comments": comments.map((c) => c.toMap()).toList(),
+      "randomOffset": randomOffset,
     };
   }
 }

@@ -3,7 +3,7 @@ import "dart:typed_data";
 import "package:http/http.dart" as http;
 import "package:http_parser/http_parser.dart";
 import "package:sighttrack_app/logging.dart";
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 Future<Map<String, dynamic>> getPresignedURL() async {
   try {

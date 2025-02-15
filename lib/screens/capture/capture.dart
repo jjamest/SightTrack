@@ -1,9 +1,12 @@
+import "dart:math";
 import "dart:typed_data";
 
 import "package:amplify_flutter/amplify_flutter.dart";
 import "package:camera/camera.dart";
 import "package:flutter/material.dart";
 import "package:geolocator/geolocator.dart";
+import "package:provider/provider.dart";
+import "package:sighttrack_app/models/settings_state.dart";
 import "package:sighttrack_app/services/upload_service.dart";
 import "package:sighttrack_app/models/photomarker.dart";
 import "package:sighttrack_app/screens/capture/review_capture.dart";
@@ -99,7 +102,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
       final XFile image = await controller.takePicture();
       Uint8List imageBytes = await image.readAsBytes();
 
-      // Step 1: Get presigned URL to upload imamge
+      // Step 1: Get presigned URL to upload image
       final presignedData = await getPresignedURL();
 
       // Step 2: Upload image to S3
@@ -130,19 +133,40 @@ class _CaptureScreenState extends State<CaptureScreen> {
           desiredAccuracy: LocationAccuracy.best,
         );
 
+        // Access randomPhotoOffset setting.
+        if (!mounted) return;
+        final randomPhotoOffset =
+            Provider.of<SettingsState>(context, listen: false)
+                .randomPhotoOffset;
+
+        // Compute final coordinates and, if enabled, a random offset.
+        double lat = position.latitude;
+        double long = position.longitude;
+        Map<String, double>? offset;
+        if (randomPhotoOffset) {
+          final random = Random();
+          // Generate offsets between -0.001 and 0.001 degrees.
+          double offsetLat = (random.nextDouble() * 0.002) - 0.001;
+          double offsetLong = (random.nextDouble() * 0.002) - 0.001;
+          lat += offsetLat;
+          long += offsetLong;
+          offset = {"lat": offsetLat, "long": offsetLong};
+        }
+
         // Step 3: Create Photomarker object with metadata
         final photoMarker = PhotoMarker(
           photoId: presignedData["object_key"],
           userId: username!,
           time: DateTime.now(),
-          latitude: position.latitude,
-          longitude: position.longitude,
+          latitude: lat,
+          longitude: long,
           imageUrl: presignedData["url"],
+          randomOffset: offset,
         );
 
         // Step 4 moved to review_upload.dart
 
-        // Step 5: Navigate to review uplaod screen
+        // Step 5: Navigate to review upload screen
         if (!mounted) return;
         Navigator.push(
           context,
@@ -173,8 +197,8 @@ class _CaptureScreenState extends State<CaptureScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override

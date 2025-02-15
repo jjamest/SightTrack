@@ -28,7 +28,7 @@ Future<void> updateAll(BuildContext context) async {
 
     userState.updateState(username: username, email: email, roles: roles);
     Log.i(
-      "UserState updated: Username: $username, Email: $email, Roles: ${roles.toString()}",
+      "UserState updated: \n\tUsername: $username, \n\tEmail: $email, \n\tRoles: ${roles.toString()}",
     );
   } catch (e) {
     Log.e("Error updating user state: $e");

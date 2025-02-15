@@ -1,10 +1,14 @@
+import "package:amplify_api/amplify_api.dart";
 import "package:amplify_authenticator/amplify_authenticator.dart";
+import "package:amplify_datastore/amplify_datastore.dart";
 import "package:flutter/material.dart";
 import "package:amplify_auth_cognito/amplify_auth_cognito.dart";
 import "package:amplify_flutter/amplify_flutter.dart";
 import "package:provider/provider.dart";
 import "package:sighttrack_app/amplify_outputs.dart";
 import "package:sighttrack_app/logging.dart";
+import "package:sighttrack_app/models/ModelProvider.dart";
+import "package:sighttrack_app/models/settings_state.dart";
 import "package:sighttrack_app/navigation_bar.dart";
 import "package:sighttrack_app/models/user_state.dart";
 import "package:sighttrack_app/services/user_service.dart";
@@ -17,8 +21,11 @@ void main() async {
     await configureAmplify();
 
     runApp(
-      ChangeNotifierProvider(
-        create: (context) => UserState(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserState()),
+          ChangeNotifierProvider(create: (_) => SettingsState()),
+        ],
         child: const App(),
       ),
     );
@@ -29,10 +36,22 @@ void main() async {
 
 Future<void> configureAmplify() async {
   try {
-    await Amplify.addPlugin(AmplifyAuthCognito());
+    final authPlugin = AmplifyAuthCognito();
+    final apiPlugin = AmplifyAPI();
+    final dataStorePlugin =
+        AmplifyDataStore(modelProvider: ModelProvider.instance);
+
+    Amplify.addPlugins([dataStorePlugin, authPlugin, apiPlugin]);
     await Amplify.configure(amplifyConfig);
+
+    // Start DataStore to register the model provider for GraphQL operations.
+    await Amplify.DataStore.start().then((_) {
+      Log.i("DataStore started successfully");
+    }).catchError((e) {
+      Log.e("Error starting DataStore: $e");
+    });
   } on Exception catch (e) {
-    safePrint("Error configuring Amplify: $e");
+    Log.e("Error configuring Amplify: $e");
   }
 }
 

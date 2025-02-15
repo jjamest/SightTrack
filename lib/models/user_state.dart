@@ -5,11 +5,17 @@ class UserState with ChangeNotifier {
   String _email = "";
   List<String> _roles = [];
 
+  // Getters for existing fields
   String get username => _username;
   String get email => _email;
   List<String> get roles => _roles;
 
-  void updateState({String? username, String? email, List<String>? roles}) {
+  // Update state for multiple fields at once (including the new setting)
+  void updateState({
+    String? username,
+    String? email,
+    List<String>? roles,
+  }) {
     bool hasChanged = false;
 
     if (username != null && _username != username) {
@@ -22,7 +28,6 @@ class UserState with ChangeNotifier {
       hasChanged = true;
     }
 
-    // Here, ensure that roles are compared correctly.
     if (roles != null && _roles.toString() != roles.toString()) {
       _roles = roles;
       hasChanged = true;
@@ -33,6 +38,7 @@ class UserState with ChangeNotifier {
     }
   }
 
+  // Clear all state values (including the new setting)
   void clear() {
     _username = "";
     _email = "";

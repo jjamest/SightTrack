@@ -3,7 +3,7 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import "package:sighttrack_app/logging.dart";
 import "package:sighttrack_app/models/photomarker.dart";
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 Future<void> savePhotoMarker(PhotoMarker photoMarker) async {
   try {
@@ -73,4 +73,23 @@ Future<void> deletePhotoMarker({required String photoId}) async {
   if (response.statusCode != 200) {
     throw Exception("Failed to delete photo: ${response.body}");
   }
+}
+
+Future<PhotoMarker> getPhotoMarker({required String photoId}) async {
+  final String url =
+      "${ApiConstants.baseURL}/getPhotoMarkerById?photoId=$photoId";
+
+  final response = await http.get(
+    Uri.parse(url),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception("Failed to fetch photo marker: ${response.body}");
+  }
+
+  final Map<String, dynamic> data = jsonDecode(response.body);
+  return PhotoMarker.fromMap(data);
 }

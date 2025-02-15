@@ -1,7 +1,7 @@
 import "dart:convert";
 
 import "package:http/http.dart" as http;
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 Future<Map<String, dynamic>> getDataAnalysis() async {
   final response = await http.get(Uri.parse(ApiConstants.getAnalysis));

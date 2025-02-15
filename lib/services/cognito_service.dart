@@ -2,7 +2,7 @@ import "package:sighttrack_app/logging.dart";
 import "package:sighttrack_app/models/app_user.dart";
 import "package:http/http.dart" as http;
 import "dart:convert";
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 Future<List<AppUser>?> getAllUsers() async {
   final url = "${ApiConstants.baseURL}/admin/getAllUsers";

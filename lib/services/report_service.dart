@@ -1,7 +1,7 @@
 import "dart:convert";
 import "package:http/http.dart" as http;
 import "package:sighttrack_app/logging.dart";
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 
 Future<void> submitReport({
   required String itemId,

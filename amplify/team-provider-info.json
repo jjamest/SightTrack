@@ -10,6 +10,11 @@
       "StackName": "amplify-sighttrack-dev-21f77",
       "StackId": "arn:aws:cloudformation:us-east-1:111074719624:stack/amplify-sighttrack-dev-21f77/0670a220-db31-11ef-9c47-12ccdd6c91c1",
       "AmplifyAppId": "dau6fx9oapiqh"
+    },
+    "categories": {
+      "api": {
+        "sighttrack": {}
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import "package:sighttrack_app/logging.dart";
 import "package:sighttrack_app/models/comment.dart";
-import "package:sighttrack_app/settings.dart";
+import "package:sighttrack_app/global.dart";
 import "package:http/http.dart" as http;
 import "dart:convert";
 

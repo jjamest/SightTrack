@@ -7,6 +7,7 @@ import "package:sighttrack_app/screens/info/faq.dart";
 import "package:sighttrack_app/screens/info/privacy.dart";
 import "package:sighttrack_app/screens/info/terms.dart";
 import "package:sighttrack_app/screens/profile/edit_profile.dart";
+import "package:sighttrack_app/screens/profile/settings.dart";
 import "package:sighttrack_app/screens/upload/upload_gallery.dart";
 import "package:sighttrack_app/services/announcement_service.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -240,6 +241,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildSettingsButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsScreen()),
+        );
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            child: const Icon(
+              Icons.settings,
+              size: 32,
+              // color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userState = Provider.of<UserState>(context);
@@ -327,11 +352,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            // Position the announcements button in the top left (outside the AppBar).
             Positioned(
               top: 16,
               left: 16,
               child: _buildAnnouncementButton(),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: _buildSettingsButton(),
             ),
           ],
         ),

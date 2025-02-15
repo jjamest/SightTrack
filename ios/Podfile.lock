@@ -2,9 +2,30 @@ PODS:
   - amplify_auth_cognito (0.0.1):
     - Flutter
     - FlutterMacOS
+  - amplify_datastore (0.0.1):
+    - amplify_datastore/Amplify (= 0.0.1)
+    - amplify_datastore/AWSDataStorePlugin (= 0.0.1)
+    - amplify_datastore/AWSPluginsCore (= 0.0.1)
+    - Flutter
+    - Starscream (= 4.0.4)
+  - amplify_datastore/Amplify (0.0.1):
+    - Flutter
+    - Starscream (= 4.0.4)
+  - amplify_datastore/AWSDataStorePlugin (0.0.1):
+    - amplify_datastore/Amplify
+    - amplify_datastore/AWSPluginsCore
+    - Flutter
+    - SQLite.swift (= 0.13.2)
+    - Starscream (= 4.0.4)
+  - amplify_datastore/AWSPluginsCore (0.0.1):
+    - amplify_datastore/Amplify
+    - Flutter
+    - Starscream (= 4.0.4)
   - amplify_secure_storage (0.0.1):
     - Flutter
   - camera_avfoundation (0.0.1):
+    - Flutter
+  - connectivity_plus (0.0.1):
     - Flutter
   - device_info_plus (0.0.1):
     - Flutter
@@ -34,6 +55,10 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - SQLite.swift (0.13.2):
+    - SQLite.swift/standard (= 0.13.2)
+  - SQLite.swift/standard (0.13.2)
+  - Starscream (4.0.4)
   - url_launcher_ios (0.0.1):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
@@ -42,8 +67,10 @@ PODS:
 
 DEPENDENCIES:
   - amplify_auth_cognito (from `.symlinks/plugins/amplify_auth_cognito/darwin`)
+  - amplify_datastore (from `.symlinks/plugins/amplify_datastore/ios`)
   - amplify_secure_storage (from `.symlinks/plugins/amplify_secure_storage/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
@@ -61,14 +88,20 @@ SPEC REPOS:
   trunk:
     - Google-Maps-iOS-Utils
     - GoogleMaps
+    - SQLite.swift
+    - Starscream
 
 EXTERNAL SOURCES:
   amplify_auth_cognito:
     :path: ".symlinks/plugins/amplify_auth_cognito/darwin"
+  amplify_datastore:
+    :path: ".symlinks/plugins/amplify_datastore/ios"
   amplify_secure_storage:
     :path: ".symlinks/plugins/amplify_secure_storage/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
@@ -94,8 +127,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   amplify_auth_cognito: a5d9cb77abfbe05e3501ad0c45dddc81503e7074
+  amplify_datastore: 76d1c44680ca218f604e846c9bf5dac2901ddf9d
   amplify_secure_storage: 3edc30177ffefbcee786c408a21c02f8ab9f168e
   camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
@@ -107,6 +142,8 @@ SPEC CHECKSUMS:
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
+  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
   webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 

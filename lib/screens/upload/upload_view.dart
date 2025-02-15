@@ -317,6 +317,21 @@ class _UploadViewScreenState extends State<UploadViewScreen> {
                             },
                           ),
                         ),
+                        const SizedBox(height: 25),
+                        Center(
+                          child: Text(
+                            widget.photoMarker.randomOffset == null
+                                ? ""
+                                : "Photo location offset enabled",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                              letterSpacing: 1.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ],
                     ),
                   ),
