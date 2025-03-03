@@ -1,0 +1,20 @@
+type User @model @auth(rules: [{ allow: owner }]) {
+  id: ID! # Matches Cognito User ID
+  username: String!
+  email: String!
+  profilePicture: String # URL to S3-hosted image
+  bio: String
+  country: String
+  sightings: [Sighting] @hasMany # User's sightings
+}
+
+type Sighting @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  species: String! # Animal name or scientific name (e.g., "Bald Eagle")
+  photo: String # URL to S3-hosted photo
+  latitude: Float! # For map marker
+  longitude: Float! # For map marker
+  timestamp: AWSDateTime! # When sighted
+  notes: String # Optional description
+  user: User @belongsTo # Who logged it
+}

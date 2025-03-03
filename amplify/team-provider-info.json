@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-sighttrackv2-dev-36ec6-authRole",
+      "UnauthRoleArn": "arn:aws:iam::111074719624:role/amplify-sighttrackv2-dev-36ec6-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::111074719624:role/amplify-sighttrackv2-dev-36ec6-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-sighttrackv2-dev-36ec6-deployment",
+      "UnauthRoleName": "amplify-sighttrackv2-dev-36ec6-unauthRole",
+      "StackName": "amplify-sighttrackv2-dev-36ec6",
+      "StackId": "arn:aws:cloudformation:us-east-1:111074719624:stack/amplify-sighttrackv2-dev-36ec6/986df630-f712-11ef-a0b1-0afff2524fbf",
+      "AmplifyAppId": "d7fpsjb8xc9s4"
+    },
+    "categories": {
+      "auth": {
+        "sighttrackv23cc01380": {}
+      },
+      "api": {
+        "sighttrackv2": {}
+      },
+      "storage": {
+        "sighttrackphotos": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "resourceName": "sighttrackphotos",
+  "policyUUID": "0bf3823b",
+  "bucketName": "v2photos",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

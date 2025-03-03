@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "sighttrackv2",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authsighttrackv23cc01380",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
