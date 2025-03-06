@@ -5,7 +5,7 @@ class Log {
   static final Logger _logger = Logger("App");
 
   static void init() {
-    Logger.root.level = Level.ALL;
+    Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord record) {
       final logMessage = "[${record.level.name}] "
           "[${record.loggerName}] ${record.message}";

@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "sighttrackv23cc01380_identitypool_3cc01380",
+    "identityPoolName": "sighttrackv299852f77_identitypool_99852f77",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "sightt3cc01380",
-    "userPoolName": "sighttrackv23cc01380_userpool_3cc01380",
+    "resourceNameTruncated": "sightt99852f77",
+    "userPoolName": "sighttrackv299852f77_userpool_99852f77",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -20,8 +20,7 @@
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-      "email",
-      "preferred_username"
+      "email"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
@@ -32,19 +31,38 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "sightt3cc01380_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "sightt99852f77_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "3cc01380",
-    "resourceName": "sighttrackv23cc01380",
+    "sharedId": "99852f77",
+    "resourceName": "sighttrackv299852f7799852f77",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "default",
-    "usernameAttributes": [
-      "email"
-    ],
+    "useDefault": "manual",
+    "thirdPartyAuth": false,
+    "userPoolGroups": false,
+    "adminQueries": false,
     "triggers": {},
+    "hostedUI": false,
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true
+    "useEnabledMfas": true,
+    "authRoleArn": {
+      "Fn::GetAtt": [
+        "AuthRole",
+        "Arn"
+      ]
+    },
+    "unauthRoleArn": {
+      "Fn::GetAtt": [
+        "UnauthRole",
+        "Arn"
+      ]
+    },
+    "breakCircularDependency": true,
+    "dependsOn": [],
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": []
   }
 }

@@ -7,17 +7,24 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "sighttrackv23cc01380"
+          "resourceName": "sighttrackv299852f7799852f77"
         }
       ],
       "output": {
         "authConfig": {
-          "additionalAuthenticationProviders": [],
-          "defaultAuthentication": {
-            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authsighttrackv23cc01380"
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authsighttrackv299852f7799852f77"
+              }
             }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
           }
         }
       },
@@ -26,7 +33,7 @@
     }
   },
   "auth": {
-    "sighttrackv23cc01380": {
+    "sighttrackv299852f7799852f77": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -39,13 +46,10 @@
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
-          "EMAIL",
-          "PREFERRED_USERNAME"
-        ],
-        "socialProviders": [],
-        "usernameAttributes": [
           "EMAIL"
         ],
+        "socialProviders": [],
+        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]
@@ -54,8 +58,9 @@
       "service": "Cognito"
     }
   },
+  "function": {},
   "storage": {
-    "sighttrackphotos": {
+    "SightTrackPhotos": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"

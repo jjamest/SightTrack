@@ -9,17 +9,18 @@
       "UnauthRoleName": "amplify-sighttrackv2-dev-36ec6-unauthRole",
       "StackName": "amplify-sighttrackv2-dev-36ec6",
       "StackId": "arn:aws:cloudformation:us-east-1:111074719624:stack/amplify-sighttrackv2-dev-36ec6/986df630-f712-11ef-a0b1-0afff2524fbf",
-      "AmplifyAppId": "d7fpsjb8xc9s4"
+      "AmplifyAppId": "d7fpsjb8xc9s4",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-sighttrackv2-dev-36ec6-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
-        "sighttrackv23cc01380": {}
+        "sighttrackv299852f7799852f77": {}
       },
       "api": {
         "sighttrackv2": {}
       },
       "storage": {
-        "sighttrackphotos": {}
+        "SightTrackPhotos": {}
       }
     }
   }

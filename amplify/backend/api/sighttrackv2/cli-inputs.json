@@ -4,14 +4,14 @@
     "apiName": "sighttrackv2",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "AMAZON_COGNITO_USER_POOLS",
-      "cognitoUserPoolId": "authsighttrackv23cc01380"
+      "mode": "API_KEY",
+      "expirationTime": 7
     },
-    "conflictResolution": {
-      "defaultResolutionStrategy": {
-        "type": "AUTOMERGE"
+    "additionalAuthTypes": [
+      {
+        "mode": "AMAZON_COGNITO_USER_POOLS",
+        "cognitoUserPoolId": "authsighttrackv299852f7799852f77"
       }
-    },
-    "additionalAuthTypes": []
+    ]
   }
 }
