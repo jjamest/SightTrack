@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:sighttrack/screens/home/home.dart';
 import 'package:sighttrack/screens/profile/profile.dart';
+import 'package:sighttrack/screens/profile/settings.dart';
 
 class Navigation extends StatelessWidget {
   const Navigation({super.key});
@@ -15,15 +16,25 @@ class Navigation extends StatelessWidget {
     return [
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.home),
-        title: ("Home"),
+        title: ('Home'),
         activeColorPrimary: CupertinoColors.activeGreen,
         inactiveColorPrimary: CupertinoColors.systemGrey,
+        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+          initialRoute: '/home',
+          routes: {},
+        ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.profile_circled),
-        title: ("Profile"),
+        title: ('Profile'),
         activeColorPrimary: CupertinoColors.activeGreen,
         inactiveColorPrimary: CupertinoColors.systemGrey,
+        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+          initialRoute: '/profile',
+          routes: {
+            '/settings': (final context) => const SettingsScreen(),
+          },
+        ),
       ),
     ];
   }

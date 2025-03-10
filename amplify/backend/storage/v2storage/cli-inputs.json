@@ -1,0 +1,14 @@
+{
+  "resourceName": "v2storage",
+  "policyUUID": "2d755c20",
+  "bucketName": "v2storage",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

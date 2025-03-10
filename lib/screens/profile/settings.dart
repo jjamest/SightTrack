@@ -1,8 +1,9 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack/models/User.dart';
+import 'package:sighttrack/screens/profile/profile.dart';
 import 'package:sighttrack/screens/profile/profile_picture.dart';
-import 'package:sighttrack/widgets/button.dart'; // Your custom SightTrackButton
+import 'package:sighttrack/widgets/button.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -77,18 +78,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Settings"),
+        title: const Text('Settings'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : user == null
-              ? const Center(child: Text("No profile found."))
+              ? const Center(child: Text('No profile found.'))
               : ListView(
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
                       child: Text(
-                        "Profile Settings",
+                        'Profile Settings',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -97,65 +98,91 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     ListTile(
-                      leading: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: user!.profilePicture != null
-                            ? NetworkImage(user!.profilePicture!)
-                            : null,
-                        backgroundColor: user!.profilePicture == null
-                            ? Colors.grey
-                            : Colors.transparent,
-                        child: user!.profilePicture == null
-                            ? const Icon(Icons.person, color: Colors.white)
-                            : null,
-                      ),
-                      title: const Text("Profile Picture"),
+                      leading: (user!.profilePicture != null &&
+                              user!.profilePicture!.isNotEmpty)
+                          ? FutureBuilder<String?>(
+                              future: ProfileScreen.loadProfilePicture(
+                                  user!.profilePicture!),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (snapshot.hasError ||
+                                    !snapshot.hasData) {
+                                  return CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.grey,
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 25,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                } else {
+                                  return CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage:
+                                        NetworkImage(snapshot.data!),
+                                  );
+                                }
+                              },
+                            )
+                          : CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.grey,
+                              child: const Icon(
+                                Icons.person,
+                                size: 25,
+                                color: Colors.white,
+                              ),
+                            ),
+                      title: const Text('Profile Picture'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: _navigateToChangeProfilePicture,
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
-                      title: const Text("Username"),
+                      title: const Text('Username'),
                       subtitle: Text(user!.username),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () =>
-                          _navigateToEditPage("Username", user!.username),
+                          _navigateToEditPage('Username', user!.username),
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
-                      title: const Text("Email"),
+                      title: const Text('Email'),
                       subtitle: Text(user!.email),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _navigateToEditPage("Email", user!.email),
+                      onTap: () => _navigateToEditPage('Email', user!.email),
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
-                      title: const Text("Country"),
+                      title: const Text('Country'),
                       subtitle: Text(
                         user!.country != null && user!.country!.isNotEmpty
                             ? user!.country!
-                            : "Not set",
+                            : 'Not set',
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () =>
-                          _navigateToEditPage("Country", user!.country),
+                          _navigateToEditPage('Country', user!.country),
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
-                      title: const Text("Bio"),
+                      title: const Text('Bio'),
                       subtitle: Text(
                         user!.bio != null && user!.bio!.isNotEmpty
                             ? user!.bio!
-                            : "Not set",
+                            : 'Not set',
                       ),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _navigateToEditPage("Bio", user!.bio),
+                      onTap: () => _navigateToEditPage('Bio', user!.bio),
                     ),
                     const SizedBox(height: 32),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                       child: Text(
-                        "App Settings",
+                        'App Settings',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -164,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     ListTile(
-                      title: const Text("Notifications"),
+                      title: const Text('Notifications'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         Navigator.push(
@@ -178,7 +205,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
-                      title: const Text("Privacy"),
+                      title: const Text('Privacy'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         Navigator.push(
@@ -195,9 +222,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-// ===================
-// EDIT FIELD PAGE
-// ===================
 class EditFieldPage extends StatefulWidget {
   final String field;
   final String? currentValue;
@@ -222,7 +246,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.currentValue ?? "");
+    _controller = TextEditingController(text: widget.currentValue ?? '');
   }
 
   @override
@@ -240,16 +264,16 @@ class _EditFieldPageState extends State<EditFieldPage> {
         final newValue = _controller.text.trim();
         User updatedUser;
         switch (widget.field) {
-          case "Username":
+          case 'Username':
             updatedUser = widget.user.copyWith(username: newValue);
             break;
-          case "Email":
+          case 'Email':
             updatedUser = widget.user.copyWith(email: newValue);
             break;
-          case "Country":
+          case 'Country':
             updatedUser = widget.user.copyWith(country: newValue);
             break;
-          case "Bio":
+          case 'Bio':
             updatedUser = widget.user.copyWith(bio: newValue);
             break;
           default:
@@ -258,12 +282,12 @@ class _EditFieldPageState extends State<EditFieldPage> {
         }
         await Amplify.DataStore.save(updatedUser);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Field updated successfully!")),
+          const SnackBar(content: Text('Field updated successfully!')),
         );
         Navigator.of(context).pop();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error updating field: $e")),
+          SnackBar(content: Text('Error updating field: $e')),
         );
       } finally {
         if (mounted) {
@@ -279,7 +303,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit ${widget.field}"),
+        title: Text('Edit ${widget.field}'),
       ),
       backgroundColor: Colors.white,
       body: Padding(
@@ -295,23 +319,23 @@ class _EditFieldPageState extends State<EditFieldPage> {
                   border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
-                  if (widget.field == "Username" || widget.field == "Email") {
+                  if (widget.field == 'Username' || widget.field == 'Email') {
                     if (value == null || value.trim().isEmpty) {
-                      return "${widget.field} cannot be empty";
+                      return '${widget.field} cannot be empty';
                     }
                   }
-                  if (widget.field == "Email" &&
+                  if (widget.field == 'Email' &&
                       value != null &&
                       value.trim().isNotEmpty &&
-                      !RegExp(r"^[^@]+@[^@]+\.[^@]+").hasMatch(value.trim())) {
-                    return "Enter a valid email";
+                      !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value.trim())) {
+                    return 'Enter a valid email';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
               SightTrackButton(
-                text: "Save",
+                text: 'Save',
                 onPressed: isSaving ? null : _saveField,
                 loading: isSaving,
                 width: double.infinity,
@@ -331,11 +355,11 @@ class NotificationsSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications"),
+        title: const Text('Notifications'),
       ),
       backgroundColor: Colors.white,
       body: const Center(
-        child: Text("Notifications settings go here."),
+        child: Text('Notifications settings go here.'),
       ),
     );
   }
@@ -348,11 +372,11 @@ class PrivacySettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Privacy"),
+        title: const Text('Privacy'),
       ),
       backgroundColor: Colors.white,
       body: const Center(
-        child: Text("Privacy settings go here."),
+        child: Text('Privacy settings go here.'),
       ),
     );
   }

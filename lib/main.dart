@@ -16,14 +16,14 @@ Future<void> main() async {
 
   try {
     // Add all necessary plugins.
-    Amplify.addPlugins([
+    await Amplify.addPlugins([
       AmplifyDataStore(modelProvider: ModelProvider.instance),
       AmplifyAPI(),
       AmplifyAuthCognito(),
-      AmplifyStorageS3()
-    ]).then((_) {
-      return Amplify.configure(amplifyconfig);
-    });
+      AmplifyStorageS3(),
+    ]);
+    await Amplify.configure(amplifyconfig);
+    await Amplify.DataStore.start();
 
     // Listen for authentication events to check for new users.
     Amplify.Hub.listen(HubChannel.Auth, (hubEvent) {
@@ -75,9 +75,9 @@ Future<void> main() async {
       }
     });
   } on AmplifyException catch (e) {
-    Log.e("Error in main(). Did not configure Amplify: $e");
+    Log.e('Error in main(). Did not configure Amplify: $e');
   } catch (e) {
-    Log.e("Error in main(). An unknown error occurred: $e");
+    Log.e('Error in main(). An unknown error occurred: $e');
   }
 
   runApp(const SightTrackApp());
@@ -120,7 +120,7 @@ class _SightTrackAppState extends State<SightTrackApp> {
                     Image.asset('assets/images/icon.jpg',
                         height: 150, width: 150, fit: BoxFit.contain),
                     const SizedBox(height: 20),
-                    const Text("Welcome to SightTrack",
+                    const Text('Welcome to SightTrack',
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -137,13 +137,13 @@ class _SightTrackAppState extends State<SightTrackApp> {
                         TextButton(
                           onPressed: () =>
                               state.changeStep(AuthenticatorStep.signUp),
-                          child: const Text("Create Account",
+                          child: const Text('Create Account',
                               style: TextStyle(color: Colors.indigo)),
                         ),
                         TextButton(
                           onPressed: () =>
                               state.changeStep(AuthenticatorStep.resetPassword),
-                          child: const Text("Forgot Password?",
+                          child: const Text('Forgot Password?',
                               style: TextStyle(color: Colors.indigo)),
                         ),
                       ],
@@ -178,7 +178,7 @@ class _SightTrackAppState extends State<SightTrackApp> {
                     Image.asset('assets/images/icon.jpg',
                         height: 150, width: 150, fit: BoxFit.contain),
                     const SizedBox(height: 20),
-                    const Text("Join SightTrack",
+                    const Text('Join SightTrack',
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -194,7 +194,7 @@ class _SightTrackAppState extends State<SightTrackApp> {
                     TextButton(
                       onPressed: () =>
                           state.changeStep(AuthenticatorStep.signIn),
-                      child: const Text("Already have an account? Sign In",
+                      child: const Text('Already have an account? Sign In',
                           style: TextStyle(color: Colors.indigo)),
                     ),
                   ],

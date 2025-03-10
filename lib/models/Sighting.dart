@@ -32,7 +32,7 @@ class Sighting extends amplify_core.Model {
   final double? _latitude;
   final double? _longitude;
   final amplify_core.TemporalDateTime? _timestamp;
-  final String? _notes;
+  final String? _description;
   final User? _user;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -106,8 +106,8 @@ class Sighting extends amplify_core.Model {
     }
   }
   
-  String? get notes {
-    return _notes;
+  String? get description {
+    return _description;
   }
   
   User? get user {
@@ -122,9 +122,9 @@ class Sighting extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Sighting._internal({required this.id, required species, photo, required latitude, required longitude, required timestamp, notes, user, createdAt, updatedAt}): _species = species, _photo = photo, _latitude = latitude, _longitude = longitude, _timestamp = timestamp, _notes = notes, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Sighting._internal({required this.id, required species, photo, required latitude, required longitude, required timestamp, description, user, createdAt, updatedAt}): _species = species, _photo = photo, _latitude = latitude, _longitude = longitude, _timestamp = timestamp, _description = description, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Sighting({String? id, required String species, String? photo, required double latitude, required double longitude, required amplify_core.TemporalDateTime timestamp, String? notes, User? user}) {
+  factory Sighting({String? id, required String species, String? photo, required double latitude, required double longitude, required amplify_core.TemporalDateTime timestamp, String? description, User? user}) {
     return Sighting._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       species: species,
@@ -132,7 +132,7 @@ class Sighting extends amplify_core.Model {
       latitude: latitude,
       longitude: longitude,
       timestamp: timestamp,
-      notes: notes,
+      description: description,
       user: user);
   }
   
@@ -150,7 +150,7 @@ class Sighting extends amplify_core.Model {
       _latitude == other._latitude &&
       _longitude == other._longitude &&
       _timestamp == other._timestamp &&
-      _notes == other._notes &&
+      _description == other._description &&
       _user == other._user;
   }
   
@@ -168,7 +168,7 @@ class Sighting extends amplify_core.Model {
     buffer.write("latitude=" + (_latitude != null ? _latitude!.toString() : "null") + ", ");
     buffer.write("longitude=" + (_longitude != null ? _longitude!.toString() : "null") + ", ");
     buffer.write("timestamp=" + (_timestamp != null ? _timestamp!.format() : "null") + ", ");
-    buffer.write("notes=" + "$_notes" + ", ");
+    buffer.write("description=" + "$_description" + ", ");
     buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -177,7 +177,7 @@ class Sighting extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Sighting copyWith({String? species, String? photo, double? latitude, double? longitude, amplify_core.TemporalDateTime? timestamp, String? notes, User? user}) {
+  Sighting copyWith({String? species, String? photo, double? latitude, double? longitude, amplify_core.TemporalDateTime? timestamp, String? description, User? user}) {
     return Sighting._internal(
       id: id,
       species: species ?? this.species,
@@ -185,7 +185,7 @@ class Sighting extends amplify_core.Model {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       timestamp: timestamp ?? this.timestamp,
-      notes: notes ?? this.notes,
+      description: description ?? this.description,
       user: user ?? this.user);
   }
   
@@ -195,7 +195,7 @@ class Sighting extends amplify_core.Model {
     ModelFieldValue<double>? latitude,
     ModelFieldValue<double>? longitude,
     ModelFieldValue<amplify_core.TemporalDateTime>? timestamp,
-    ModelFieldValue<String?>? notes,
+    ModelFieldValue<String?>? description,
     ModelFieldValue<User?>? user
   }) {
     return Sighting._internal(
@@ -205,7 +205,7 @@ class Sighting extends amplify_core.Model {
       latitude: latitude == null ? this.latitude : latitude.value,
       longitude: longitude == null ? this.longitude : longitude.value,
       timestamp: timestamp == null ? this.timestamp : timestamp.value,
-      notes: notes == null ? this.notes : notes.value,
+      description: description == null ? this.description : description.value,
       user: user == null ? this.user : user.value
     );
   }
@@ -217,7 +217,7 @@ class Sighting extends amplify_core.Model {
       _latitude = (json['latitude'] as num?)?.toDouble(),
       _longitude = (json['longitude'] as num?)?.toDouble(),
       _timestamp = json['timestamp'] != null ? amplify_core.TemporalDateTime.fromString(json['timestamp']) : null,
-      _notes = json['notes'],
+      _description = json['description'],
       _user = json['user'] != null
         ? json['user']['serializedData'] != null
           ? User.fromJson(new Map<String, dynamic>.from(json['user']['serializedData']))
@@ -227,7 +227,7 @@ class Sighting extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'species': _species, 'photo': _photo, 'latitude': _latitude, 'longitude': _longitude, 'timestamp': _timestamp?.format(), 'notes': _notes, 'user': _user?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'species': _species, 'photo': _photo, 'latitude': _latitude, 'longitude': _longitude, 'timestamp': _timestamp?.format(), 'description': _description, 'user': _user?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -237,7 +237,7 @@ class Sighting extends amplify_core.Model {
     'latitude': _latitude,
     'longitude': _longitude,
     'timestamp': _timestamp,
-    'notes': _notes,
+    'description': _description,
     'user': _user,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -250,7 +250,7 @@ class Sighting extends amplify_core.Model {
   static final LATITUDE = amplify_core.QueryField(fieldName: "latitude");
   static final LONGITUDE = amplify_core.QueryField(fieldName: "longitude");
   static final TIMESTAMP = amplify_core.QueryField(fieldName: "timestamp");
-  static final NOTES = amplify_core.QueryField(fieldName: "notes");
+  static final DESCRIPTION = amplify_core.QueryField(fieldName: "description");
   static final USER = amplify_core.QueryField(
     fieldName: "user",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
@@ -262,7 +262,7 @@ class Sighting extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
-        identityClaim: "cognito:username",
+        identityClaim: "sub",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.CREATE,
@@ -305,7 +305,7 @@ class Sighting extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Sighting.NOTES,
+      key: Sighting.DESCRIPTION,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

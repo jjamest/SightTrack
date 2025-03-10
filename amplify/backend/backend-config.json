@@ -60,7 +60,7 @@
   },
   "function": {},
   "storage": {
-    "SightTrackPhotos": {
+    "v2storage": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"

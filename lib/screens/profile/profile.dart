@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
+import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/User.dart';
-import 'package:sighttrack/screens/profile/settings.dart' as profile_settings;
 import 'package:sighttrack/widgets/button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -11,6 +12,19 @@ class ProfileScreen extends StatefulWidget {
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
+
+  static Future<String> loadProfilePicture(String path) async {
+    final result = await Amplify.Storage.getUrl(
+      path: StoragePath.fromString(path),
+      options: const StorageGetUrlOptions(
+        pluginOptions: S3GetUrlPluginOptions(
+          validateObjectExistence: true,
+          expiresIn: Duration(hours: 2),
+        ),
+      ),
+    ).result;
+    return result.url.toString();
+  }
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -73,11 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const profile_settings.SettingsScreen()),
-              );
+              Navigator.pushNamed(context, '/settings');
             },
           ),
         ],
@@ -86,29 +96,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : user == null
-              ? const Center(child: Text("No profile found"))
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Center(child: Text('No profile found')),
+                    const SizedBox(height: 30),
+                    SightTrackButton(
+                      text: 'Logout',
+                      width: 100,
+                      onPressed: () {
+                        Amplify.Auth.signOut();
+                      },
+                    )
+                  ],
+                )
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Profile picture or default icon
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: user!.profilePicture != null
-                            ? NetworkImage(user!.profilePicture!)
-                            : null,
-                        backgroundColor: user!.profilePicture == null
-                            ? Colors.grey
-                            : Colors.transparent,
-                        child: user!.profilePicture == null
-                            ? const Icon(
+                      // user!.profilePicture != null &&
+                      //         user!.profilePicture!.isNotEmpty
+                      //     ? CircleAvatar(
+                      //         radius: 70,
+                      //         backgroundImage: NetworkImage(
+                      //             ProfileScreen.loadProfilePicture(
+                      //                     user!.profilePicture!)
+                      //                 .toString()),
+                      //       )
+                      //     : const CircleAvatar(
+                      //         radius: 70,
+                      //         backgroundColor: Colors.grey,
+                      //         child: Icon(Icons.person,
+                      //             size: 70, color: Colors.white),
+                      //       ),
+                      (user!.profilePicture != null &&
+                              user!.profilePicture!.isNotEmpty)
+                          ? FutureBuilder<String?>(
+                              future: ProfileScreen.loadProfilePicture(
+                                  user!.profilePicture!),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (snapshot.hasError ||
+                                    !snapshot.hasData) {
+                                  return CircleAvatar(
+                                    radius: 70,
+                                    backgroundColor: Colors.grey,
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 70,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                } else {
+                                  return CircleAvatar(
+                                    radius: 70,
+                                    backgroundImage:
+                                        NetworkImage(snapshot.data!),
+                                  );
+                                }
+                              },
+                            )
+                          : CircleAvatar(
+                              radius: 70,
+                              backgroundColor: Colors.grey,
+                              child: const Icon(
                                 Icons.person,
-                                size: 50,
+                                size: 70,
                                 color: Colors.white,
-                              )
-                            : null,
-                      ),
+                              ),
+                            ),
                       const SizedBox(height: 20),
                       // Username
                       Text(
@@ -143,7 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             user!.country!.isNotEmpty
                                 ? user!.country!
-                                : "Location not set",
+                                : 'Location not set',
                             style: const TextStyle(
                               fontSize: 13,
                               color: Colors.grey,
@@ -153,32 +213,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 15),
                       Text(
-                        user!.bio!.isNotEmpty ? user!.bio! : "No bio",
+                        user!.bio!.isNotEmpty ? user!.bio! : 'No bio',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 100),
                       SightTrackButton(
-                        text: "Logout",
+                        text: 'Logout',
                         onPressed: () {
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text("Logout"),
-                                  content: Text("Are you sure?"),
+                                  title: Text('Logout'),
+                                  content: Text('Are you sure?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text("Cancel"),
+                                      child: Text('Cancel'),
                                     ),
                                     TextButton(
                                       onPressed: () {
                                         Amplify.Auth.signOut();
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text("Logout"),
+                                      child: Text('Logout'),
                                     ),
                                   ],
                                 );

@@ -20,7 +20,7 @@
         "sighttrackv2": {}
       },
       "storage": {
-        "SightTrackPhotos": {}
+        "v2storage": {}
       }
     }
   }

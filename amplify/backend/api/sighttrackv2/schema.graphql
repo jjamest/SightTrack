@@ -8,13 +8,13 @@ type User @model @auth(rules: [{ allow: owner, operations: [create, update, dele
   sightings: [Sighting] @hasMany
 }
 
-type Sighting @model @auth(rules: [{ allow: owner }]) {
+type Sighting @model @auth(rules: [{ allow: owner, operations: [create, update, delete, read], identityClaim: "sub"}]) {
   id: ID!
   species: String!
   photo: String
   latitude: Float!
   longitude: Float!
   timestamp: AWSDateTime!
-  notes: String
+  description: String
   user: User @belongsTo
 }
