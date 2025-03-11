@@ -16,11 +16,13 @@ Future<void> main() async {
 
   try {
     // Add all necessary plugins.
-    await Amplify.addPlugins([
-      AmplifyDataStore(modelProvider: ModelProvider.instance),
-      AmplifyAPI(),
-      AmplifyAuthCognito(),
-      AmplifyStorageS3(),
+    await Future.wait([
+      Amplify.addPlugins([
+        AmplifyDataStore(modelProvider: ModelProvider.instance),
+        AmplifyAPI(),
+        AmplifyAuthCognito(),
+        AmplifyStorageS3(),
+      ])
     ]);
     await Amplify.configure(amplifyconfig);
     await Amplify.DataStore.start();

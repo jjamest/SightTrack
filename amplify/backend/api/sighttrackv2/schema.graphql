@@ -1,4 +1,9 @@
-type User @model @auth(rules: [{ allow: owner, operations: [create, update, delete, read], identityClaim: "sub" }]) {
+type User 
+  @model 
+  @auth(rules: [
+    {allow: owner}, 
+    {allow: groups, groups: ["Admins"], operations: [create, update, delete, read]}
+  ]) {
   id: ID!
   username: String!
   email: String!
@@ -8,7 +13,7 @@ type User @model @auth(rules: [{ allow: owner, operations: [create, update, dele
   sightings: [Sighting] @hasMany
 }
 
-type Sighting @model @auth(rules: [{ allow: owner, operations: [create, update, delete, read], identityClaim: "sub"}]) {
+type Sighting @model @auth(rules: [{allow: owner, operations: [create, update, delete, read]}]) {
   id: ID!
   species: String!
   photo: String
@@ -17,4 +22,4 @@ type Sighting @model @auth(rules: [{ allow: owner, operations: [create, update, 
   timestamp: AWSDateTime!
   description: String
   user: User @belongsTo
-}
+} 
