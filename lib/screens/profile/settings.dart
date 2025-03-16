@@ -143,10 +143,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
                       title: const Text('Username'),
-                      subtitle: Text(user!.username),
+                      subtitle: Text(user!.display_username),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () =>
-                          _navigateToEditPage('Username', user!.username),
+                      onTap: () => _navigateToEditPage(
+                          'Username', user!.display_username),
                     ),
                     const Divider(indent: 16, endIndent: 16),
                     ListTile(
@@ -265,7 +265,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
         User updatedUser;
         switch (widget.field) {
           case 'Username':
-            updatedUser = widget.user.copyWith(username: newValue);
+            updatedUser = widget.user.copyWith(display_username: newValue);
             break;
           case 'Email':
             updatedUser = widget.user.copyWith(email: newValue);

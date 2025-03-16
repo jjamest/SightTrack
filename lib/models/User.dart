@@ -28,7 +28,7 @@ import 'package:collection/collection.dart';
 class User extends amplify_core.Model {
   static const classType = const _UserModelType();
   final String id;
-  final String? _username;
+  final String? _display_username;
   final String? _email;
   final String? _profilePicture;
   final String? _bio;
@@ -50,9 +50,9 @@ class User extends amplify_core.Model {
       );
   }
   
-  String get username {
+  String get display_username {
     try {
-      return _username!;
+      return _display_username!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -100,12 +100,12 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, required username, required email, profilePicture, bio, country, sightings, createdAt, updatedAt}): _username = username, _email = email, _profilePicture = profilePicture, _bio = bio, _country = country, _sightings = sightings, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, required display_username, required email, profilePicture, bio, country, sightings, createdAt, updatedAt}): _display_username = display_username, _email = email, _profilePicture = profilePicture, _bio = bio, _country = country, _sightings = sightings, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, required String username, required String email, String? profilePicture, String? bio, String? country, List<Sighting>? sightings}) {
+  factory User({String? id, required String display_username, required String email, String? profilePicture, String? bio, String? country, List<Sighting>? sightings}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      username: username,
+      display_username: display_username,
       email: email,
       profilePicture: profilePicture,
       bio: bio,
@@ -122,7 +122,7 @@ class User extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is User &&
       id == other.id &&
-      _username == other._username &&
+      _display_username == other._display_username &&
       _email == other._email &&
       _profilePicture == other._profilePicture &&
       _bio == other._bio &&
@@ -139,7 +139,7 @@ class User extends amplify_core.Model {
     
     buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("username=" + "$_username" + ", ");
+    buffer.write("display_username=" + "$_display_username" + ", ");
     buffer.write("email=" + "$_email" + ", ");
     buffer.write("profilePicture=" + "$_profilePicture" + ", ");
     buffer.write("bio=" + "$_bio" + ", ");
@@ -151,10 +151,10 @@ class User extends amplify_core.Model {
     return buffer.toString();
   }
   
-  User copyWith({String? username, String? email, String? profilePicture, String? bio, String? country, List<Sighting>? sightings}) {
+  User copyWith({String? display_username, String? email, String? profilePicture, String? bio, String? country, List<Sighting>? sightings}) {
     return User._internal(
       id: id,
-      username: username ?? this.username,
+      display_username: display_username ?? this.display_username,
       email: email ?? this.email,
       profilePicture: profilePicture ?? this.profilePicture,
       bio: bio ?? this.bio,
@@ -163,7 +163,7 @@ class User extends amplify_core.Model {
   }
   
   User copyWithModelFieldValues({
-    ModelFieldValue<String>? username,
+    ModelFieldValue<String>? display_username,
     ModelFieldValue<String>? email,
     ModelFieldValue<String?>? profilePicture,
     ModelFieldValue<String?>? bio,
@@ -172,7 +172,7 @@ class User extends amplify_core.Model {
   }) {
     return User._internal(
       id: id,
-      username: username == null ? this.username : username.value,
+      display_username: display_username == null ? this.display_username : display_username.value,
       email: email == null ? this.email : email.value,
       profilePicture: profilePicture == null ? this.profilePicture : profilePicture.value,
       bio: bio == null ? this.bio : bio.value,
@@ -183,7 +183,7 @@ class User extends amplify_core.Model {
   
   User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _username = json['username'],
+      _display_username = json['display_username'],
       _email = json['email'],
       _profilePicture = json['profilePicture'],
       _bio = json['bio'],
@@ -205,12 +205,12 @@ class User extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'username': _username, 'email': _email, 'profilePicture': _profilePicture, 'bio': _bio, 'country': _country, 'sightings': _sightings?.map((Sighting? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'display_username': _display_username, 'email': _email, 'profilePicture': _profilePicture, 'bio': _bio, 'country': _country, 'sightings': _sightings?.map((Sighting? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'username': _username,
+    'display_username': _display_username,
     'email': _email,
     'profilePicture': _profilePicture,
     'bio': _bio,
@@ -222,7 +222,7 @@ class User extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final USERNAME = amplify_core.QueryField(fieldName: "username");
+  static final DISPLAY_USERNAME = amplify_core.QueryField(fieldName: "display_username");
   static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final PROFILEPICTURE = amplify_core.QueryField(fieldName: "profilePicture");
   static final BIO = amplify_core.QueryField(fieldName: "bio");
@@ -245,24 +245,13 @@ class User extends amplify_core.Model {
           amplify_core.ModelOperation.UPDATE,
           amplify_core.ModelOperation.DELETE,
           amplify_core.ModelOperation.READ
-        ]),
-      amplify_core.AuthRule(
-        authStrategy: amplify_core.AuthStrategy.GROUPS,
-        groupClaim: "cognito:groups",
-        groups: [ "Admins" ],
-        provider: amplify_core.AuthRuleProvider.USERPOOLS,
-        operations: const [
-          amplify_core.ModelOperation.CREATE,
-          amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE,
-          amplify_core.ModelOperation.READ
         ])
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.USERNAME,
+      key: User.DISPLAY_USERNAME,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

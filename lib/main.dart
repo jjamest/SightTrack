@@ -56,8 +56,9 @@ Future<void> main() async {
 
               // Create a new User record with default values.
               final newUser = User(
-                id: userId, // Use Cognito user ID.
-                username: currentUser.username,
+                id: userId,
+                display_username: currentUser
+                    .username, // Use the username as the display name.
                 email: email,
                 profilePicture: null,
                 bio: '',

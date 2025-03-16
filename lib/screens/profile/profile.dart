@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
+import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/User.dart';
 import 'package:sighttrack/widgets/button.dart';
 
@@ -27,7 +28,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  User? user;
+  User? userDatastore;
+  String? cognitoUsername;
   bool isLoading = true;
   late StreamSubscription subscription;
 
@@ -45,9 +47,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       setState(() {
         if (users.isNotEmpty) {
-          user = users.first;
+          userDatastore = users.first;
         }
         isLoading = false;
+        cognitoUsername = currentUser.username; // Store the username
       });
     } catch (e) {
       // Optionally log or handle errors here.
@@ -65,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Subscribe to DataStore changes for User.
     subscription = Amplify.DataStore.observe(User.classType).listen((event) {
       // If the changed record matches the current user, refresh the data.
-      if (user != null && event.item.id == user!.id) {
+      if (userDatastore != null && event.item.id == userDatastore!.id) {
         fetchCurrentUser();
       }
     });
@@ -94,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : user == null
+          : userDatastore == null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -114,27 +117,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Profile picture or default icon
-                      // user!.profilePicture != null &&
-                      //         user!.profilePicture!.isNotEmpty
-                      //     ? CircleAvatar(
-                      //         radius: 70,
-                      //         backgroundImage: NetworkImage(
-                      //             ProfileScreen.loadProfilePicture(
-                      //                     user!.profilePicture!)
-                      //                 .toString()),
-                      //       )
-                      //     : const CircleAvatar(
-                      //         radius: 70,
-                      //         backgroundColor: Colors.grey,
-                      //         child: Icon(Icons.person,
-                      //             size: 70, color: Colors.white),
-                      //       ),
-                      (user!.profilePicture != null &&
-                              user!.profilePicture!.isNotEmpty)
+                      (userDatastore!.profilePicture != null &&
+                              userDatastore!.profilePicture!.isNotEmpty)
                           ? FutureBuilder<String?>(
                               future: ProfileScreen.loadProfilePicture(
-                                  user!.profilePicture!),
+                                  userDatastore!.profilePicture!),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
@@ -169,9 +156,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                       const SizedBox(height: 20),
-                      // Username
+                      // Cognito Username display
                       Text(
-                        user!.username,
+                        cognitoUsername!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      // Display username
+                      Text(
+                        userDatastore!.display_username,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -185,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const Icon(Icons.email, size: 20, color: Colors.grey),
                           const SizedBox(width: 8),
                           Text(
-                            user!.email,
+                            userDatastore!.email,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Colors.grey,
@@ -200,8 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const Icon(Icons.pin_drop, color: Colors.grey),
                           const SizedBox(width: 8),
                           Text(
-                            user!.country!.isNotEmpty
-                                ? user!.country!
+                            userDatastore!.country!.isNotEmpty
+                                ? userDatastore!.country!
                                 : 'Location not set',
                             style: const TextStyle(
                               fontSize: 13,
@@ -212,7 +207,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 15),
                       Text(
-                        user!.bio!.isNotEmpty ? user!.bio! : 'No bio',
+                        userDatastore!.bio!.isNotEmpty
+                            ? userDatastore!.bio!
+                            : 'No bio',
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 100),
