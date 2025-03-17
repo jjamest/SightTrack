@@ -28,7 +28,7 @@ export 'User.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "38d682577d64dd7f125af239b1bc0c0a";
+  String version = '395b327f640a5bdb3793ebeb11c07bb2';
   @override
   List<amplify_core.ModelSchema> modelSchemas = [Sighting.schema, User.schema];
   @override
@@ -36,19 +36,20 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
   static final ModelProvider _instance = ModelProvider();
 
   static ModelProvider get instance => _instance;
-  
+
   amplify_core.ModelType getModelTypeByModelName(String modelName) {
-    switch(modelName) {
-      case "Sighting":
+    switch (modelName) {
+      case 'Sighting':
         return Sighting.classType;
-      case "User":
+      case 'User':
         return User.classType;
       default:
-        throw Exception("Failed to find model in model provider for model name: " + modelName);
+        throw Exception(
+            'Failed to find model in model provider for model name: ' +
+                modelName);
     }
   }
 }
-
 
 class ModelFieldValue<T> {
   const ModelFieldValue.value(this.value);

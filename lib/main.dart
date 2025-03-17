@@ -5,6 +5,7 @@ import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:sighttrack/amplifyconfiguration.dart';
 import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/ModelProvider.dart';
@@ -13,6 +14,8 @@ import 'package:sighttrack/navigation.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Log.init();
+  MapboxOptions.setAccessToken(
+      'pk.eyJ1IjoiamFtZXN0dCIsImEiOiJjbThjOGZ3ZDYxNzdxMm1vbDRma3ZjczN0In0.AN_WIYTiODrQPCNaGtrucA');
 
   try {
     // Add all necessary plugins.

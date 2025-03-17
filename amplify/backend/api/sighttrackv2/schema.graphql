@@ -11,10 +11,10 @@ type User @model @auth(rules: [{allow: owner}]) {
 type Sighting @model @auth(rules: [{allow: owner, operations: [create, update, delete, read]}, {allow: public, operations: [read]}]) {
   id: ID!
   species: String!
-  photo: String
+  photo: String!
   latitude: Float!
   longitude: Float!
   timestamp: AWSDateTime!
   description: String
   user: User @belongsTo
-} 
+}

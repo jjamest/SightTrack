@@ -1,14 +1,14 @@
-import "package:flutter/foundation.dart";
-import "package:logging/logging.dart";
+import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
 class Log {
-  static final Logger _logger = Logger("App");
+  static final Logger _logger = Logger('App');
 
   static void init() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord record) {
-      final logMessage = "[${record.level.name}] "
-          "[${record.loggerName}] ${record.message}";
+      final logMessage = '[${record.level.name}] '
+          '[${record.loggerName}] ${record.message}';
 
       if (kDebugMode) {
         debugPrintSynchronously(logMessage);
@@ -16,12 +16,12 @@ class Log {
 
       if (record.error != null) {
         if (kDebugMode) {
-          debugPrintSynchronously("Error: ${record.error}");
+          debugPrintSynchronously('Error: ${record.error}');
         }
       }
       if (record.stackTrace != null) {
         if (kDebugMode) {
-          debugPrintSynchronously("StackTrace: ${record.stackTrace}");
+          debugPrintSynchronously('StackTrace: ${record.stackTrace}');
         }
       }
     });

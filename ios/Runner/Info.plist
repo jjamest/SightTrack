@@ -49,5 +49,7 @@
 	<string>To choose a photo for uploading and changing profile pictures</string>
 	<key>NSCameraUsageDescription</key>
 	<string>To take a picture for photo uploads and profile pictures</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open to access the map</string>
 </dict>
 </plist>
