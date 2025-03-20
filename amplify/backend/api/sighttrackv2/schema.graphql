@@ -1,0 +1,20 @@
+type User @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  display_username: String!
+  email: String!
+  profilePicture: String
+  bio: String
+  country: String
+  sightings: [Sighting] @hasMany
+}
+
+type Sighting @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  species: String!
+  photo: String!
+  latitude: Float!
+  longitude: Float!
+  timestamp: AWSDateTime!
+  description: String
+  user: User @belongsTo
+}

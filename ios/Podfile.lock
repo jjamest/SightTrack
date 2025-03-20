@@ -1,0 +1,143 @@
+PODS:
+  - amplify_auth_cognito (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - amplify_datastore (0.0.1):
+    - amplify_datastore/Amplify (= 0.0.1)
+    - amplify_datastore/AWSDataStorePlugin (= 0.0.1)
+    - amplify_datastore/AWSPluginsCore (= 0.0.1)
+    - Flutter
+    - Starscream (= 4.0.4)
+  - amplify_datastore/Amplify (0.0.1):
+    - Flutter
+    - Starscream (= 4.0.4)
+  - amplify_datastore/AWSDataStorePlugin (0.0.1):
+    - amplify_datastore/Amplify
+    - amplify_datastore/AWSPluginsCore
+    - Flutter
+    - SQLite.swift (= 0.13.2)
+    - Starscream (= 4.0.4)
+  - amplify_datastore/AWSPluginsCore (0.0.1):
+    - amplify_datastore/Amplify
+    - Flutter
+    - Starscream (= 4.0.4)
+  - amplify_secure_storage (0.0.1):
+    - Flutter
+  - camera_avfoundation (0.0.1):
+    - Flutter
+  - connectivity_plus (0.0.1):
+    - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - geolocator_apple (1.2.0):
+    - Flutter
+  - image_picker_ios (0.0.1):
+    - Flutter
+  - mapbox_maps_flutter (2.6.0):
+    - Flutter
+    - MapboxMaps (= 11.10.1)
+    - Turf (= 4.0.0)
+  - MapboxCommon (24.10.0):
+    - Turf (= 4.0.0)
+  - MapboxCoreMaps (11.10.2):
+    - MapboxCommon (~> 24.10)
+  - MapboxMaps (11.10.1):
+    - MapboxCommon (= 24.10.0)
+    - MapboxCoreMaps (= 11.10.2)
+    - Turf (= 4.0.0)
+  - package_info_plus (0.4.5):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - SQLite.swift (0.13.2):
+    - SQLite.swift/standard (= 0.13.2)
+  - SQLite.swift/standard (0.13.2)
+  - Starscream (4.0.4)
+  - Turf (4.0.0)
+  - url_launcher_ios (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - amplify_auth_cognito (from `.symlinks/plugins/amplify_auth_cognito/darwin`)
+  - amplify_datastore (from `.symlinks/plugins/amplify_datastore/ios`)
+  - amplify_secure_storage (from `.symlinks/plugins/amplify_secure_storage/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - Flutter (from `Flutter`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - mapbox_maps_flutter (from `.symlinks/plugins/mapbox_maps_flutter/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - MapboxCommon
+    - MapboxCoreMaps
+    - MapboxMaps
+    - SQLite.swift
+    - Starscream
+    - Turf
+
+EXTERNAL SOURCES:
+  amplify_auth_cognito:
+    :path: ".symlinks/plugins/amplify_auth_cognito/darwin"
+  amplify_datastore:
+    :path: ".symlinks/plugins/amplify_datastore/ios"
+  amplify_secure_storage:
+    :path: ".symlinks/plugins/amplify_secure_storage/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  Flutter:
+    :path: Flutter
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
+  mapbox_maps_flutter:
+    :path: ".symlinks/plugins/mapbox_maps_flutter/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+SPEC CHECKSUMS:
+  amplify_auth_cognito: a5d9cb77abfbe05e3501ad0c45dddc81503e7074
+  amplify_datastore: 76d1c44680ca218f604e846c9bf5dac2901ddf9d
+  amplify_secure_storage: 3edc30177ffefbcee786c408a21c02f8ab9f168e
+  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
+  device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
+  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
+  mapbox_maps_flutter: 1457f41480792ffeaefbf3786008ce2f701dcd20
+  MapboxCommon: 363dbed6bcdaa9a08674098fc5c661e826049dc2
+  MapboxCoreMaps: ba391b7121c52d8ab656b0efa081d928648c8c6f
+  MapboxMaps: 5ec35b1ad72822b9b66c69955e6bb0a81129d4b0
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
+  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
+  Turf: c9eb11a65d96af58cac523460fd40fec5061b081
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+
+PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
+
+COCOAPODS: 1.16.2
