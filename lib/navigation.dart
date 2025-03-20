@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:sighttrack/screens/capture/capture.dart';
+import 'package:sighttrack/screens/home/all_sightings.dart';
 import 'package:sighttrack/screens/home/home.dart';
 import 'package:sighttrack/screens/profile/profile.dart';
 import 'package:sighttrack/screens/profile/settings.dart';
@@ -22,7 +23,9 @@ class Navigation extends StatelessWidget {
         inactiveColorPrimary: CupertinoColors.systemGrey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
           initialRoute: '/home',
-          routes: {},
+          routes: {
+            '/allSightings': (final context) => const AllSightingsScreen(),
+          },
         ),
       ),
       PersistentBottomNavBarItem(

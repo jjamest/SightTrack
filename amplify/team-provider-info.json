@@ -26,7 +26,7 @@
       "function": {
         "sightingComputerVision": {
           "deploymentBucketName": "amplify-sighttrackv2-dev-220519-deployment",
-          "s3Key": "amplify-builds/sightingComputerVision-4a6947454c6462586350-build.zip"
+          "s3Key": "amplify-builds/sightingComputerVision-5347304a4a42337a5764-build.zip"
         }
       }
     }

@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sighttrack/logging.dart';
 import 'dart:io';
 
@@ -160,6 +161,24 @@ class CaptureScreenState extends State<CaptureScreen> {
     }
   }
 
+  Future<void> _pickFromGallery() async {
+    try {
+      final XFile? image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+      if (image != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PhotoPreviewScreen(imagePath: image.path),
+          ),
+        );
+      }
+    } catch (e) {
+      Log.e('Error picking image from gallery: $e');
+    }
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
@@ -288,7 +307,7 @@ class CaptureScreenState extends State<CaptureScreen> {
                   // Album button (unchanged)
                   GestureDetector(
                     onTap: () {
-                      Log.i('Open camera roll');
+                      _pickFromGallery();
                     },
                     child: Container(
                       width: 50,

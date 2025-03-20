@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.6"
+  aws_lambda_api:
+    dependency: "direct main"
+    description:
+      name: aws_lambda_api
+      sha256: d6f8db24d5fa397dbabcef0412dce3374208d2917ef192adfc77a649322ad719
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   aws_signature_v4:
     dependency: transitive
     description:
@@ -925,6 +933,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  shared_aws_api:
+    dependency: transitive
+    description:
+      name: shared_aws_api
+      sha256: "6a6eb57d422d5a4b09c6f65703dd9be90d5a0d7a6fa284762139e5c0dea19136"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   shelf:
     dependency: transitive
     description:

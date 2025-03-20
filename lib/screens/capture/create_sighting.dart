@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -19,15 +21,27 @@ class CreateSightingScreen extends StatefulWidget {
 
 class _CreateSightingScreenState extends State<CreateSightingScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _speciesController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime _selectedDateTime = DateTime.now();
   geo.Position? _selectedLocation;
+  String? _selectedSpecies;
+  List<String>? identifiedSpecies;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _initializerWrapper();
+  }
+
+  Future<void> _initializerWrapper() async {
+    List<String>? temp = await _invokeLambdaForSpecies(widget.imagePath);
+    if (temp != null && temp.isNotEmpty) {
+      setState(() {
+        identifiedSpecies = temp;
+        _selectedSpecies = temp[0];
+      });
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -41,6 +55,43 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
       });
     } catch (e) {
       Log.e('Error getting location: $e');
+    }
+  }
+
+  Future<List<String>>? _invokeLambdaForSpecies(String imagePath) async {
+    try {
+      // Read the image file as bytes
+      final imageFile = File(imagePath);
+      final imageBytes = await imageFile.readAsBytes();
+
+      // Optionally encode as base64 (simpler for JSON payloads)
+      final base64Image = base64Encode(imageBytes);
+      final requestBody = jsonEncode({'image': base64Image});
+
+      // Send POST request with image data
+      final response =
+          await Amplify.API
+              .post(
+                '/analyze',
+                body: HttpPayload.json(requestBody),
+                headers: {'Content-Type': 'application/json'},
+              )
+              .response;
+
+      final responseBody = jsonDecode(response.decodeBody());
+      final labels =
+          (responseBody['labels'] as List)
+              .map((label) => label['Name'] as String)
+              .toList();
+
+      Log.i('Lambda response: $labels');
+      return labels;
+    } on ApiException catch (e) {
+      Log.e('API call to /analyze failed (method: POST): $e');
+      return [];
+    } catch (e) {
+      Log.e('Unexpected error in Lambda invocation: $e');
+      return [];
     }
   }
 
@@ -134,7 +185,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         // Create the Sighting object with the S3 path
         final sighting = Sighting(
           id: sightingId, // Explicitly set the ID to match the S3 key
-          species: _speciesController.text,
+          species: _selectedSpecies!,
           photo: s3Key,
           latitude: _selectedLocation!.latitude,
           longitude: _selectedLocation!.longitude,
@@ -146,7 +197,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         // Save to DataStore
         await Amplify.DataStore.save(sighting);
         Log.i(
-          'Sighting saved. ID: $sightingId | Image Path: $s3Key | Species: ${_speciesController.text} | Description: ${_descriptionController.text} | DateTime: ${_selectedDateTime.toIso8601String()} | Location: ${_selectedLocation?.latitude}, ${_selectedLocation?.longitude} | User: ${currentUser.id}',
+          'Sighting saved. ID: $sightingId | Image Path: $s3Key | Species: ${_selectedSpecies!} | Description: ${_descriptionController.text} | DateTime: ${_selectedDateTime.toIso8601String()} | Location: ${_selectedLocation?.latitude}, ${_selectedLocation?.longitude} | User: ${currentUser.id}',
         );
 
         if (!mounted) return;
@@ -184,7 +235,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
 
   @override
   void dispose() {
-    _speciesController.dispose();
+    // _speciesController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -292,13 +343,11 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                TextFormField(
-                  controller: _speciesController,
+                DropdownButtonFormField<String>(
+                  value: _selectedSpecies,
                   decoration: InputDecoration(
                     labelText: 'Species*',
-                    hintText: 'Enter your sighting species',
                     labelStyle: const TextStyle(color: Colors.white),
-                    hintStyle: const TextStyle(color: Colors.white54),
                     filled: true,
                     fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
@@ -318,9 +367,23 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
                     ),
                   ),
                   style: const TextStyle(color: Colors.white),
+                  dropdownColor: Colors.grey[850],
+                  items:
+                      identifiedSpecies?.map((String species) {
+                        return DropdownMenuItem<String>(
+                          value: species,
+                          child: Text(species),
+                        );
+                      }).toList() ??
+                      [],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedSpecies = newValue;
+                    });
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a species';
+                      return 'Please select a species';
                     }
                     return null;
                   },

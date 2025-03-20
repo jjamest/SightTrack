@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
@@ -94,8 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
             coordinates: Position(sighting.longitude, sighting.latitude),
           ),
           circleRadius: 10,
-          circleColor: Color.fromARGB(255, 255, 255, 0).toARGB32(),
-          circleBlur: 1,
+          circleColor:
+              Color.fromARGB(
+                255,
+                Random().nextInt(256),
+                Random().nextInt(256),
+                Random().nextInt(256),
+              ).toARGB32(),
+          circleBlur: 0.5,
         ),
       );
     }
@@ -247,12 +254,57 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Listener(
-        onPointerDown: (_) => _onUserInteraction(),
-        child: MapWidget(
-          styleUri: 'mapbox://styles/jamestt/cm8c8inqm004b01rxat34g28r',
-          onMapCreated: onMapCreated,
-        ),
+      body: Stack(
+        children: [
+          Listener(
+            onPointerDown: (_) => _onUserInteraction(),
+            child: MapWidget(
+              styleUri: 'mapbox://styles/jamestt/cm8c8inqm004b01rxat34g28r',
+              onMapCreated: onMapCreated,
+            ),
+          ),
+          // New top-left button with same styling
+          Positioned(
+            top: 50.0,
+            left: 16.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/allSightings');
+              },
+              backgroundColor: Colors.grey[850]!.withValues(alpha: 0.9),
+              foregroundColor: Colors.white,
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(
+                  color: Colors.grey[700]!.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+              ),
+              splashColor: Colors.blueAccent.withValues(alpha: 0.2),
+              heroTag: 'topLeftFAB',
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.list,
+                  size: 24,
+                  color: Colors.white,
+                ), // Change icon as needed
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _resetCameraToUserLocation,
