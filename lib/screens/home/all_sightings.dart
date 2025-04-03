@@ -130,8 +130,8 @@ class _AllSightingsScreenState extends State<AllSightingsScreen> {
                               ),
                             );
                           },
-                          splashColor: Colors.blueGrey.withOpacity(0.1),
-                          highlightColor: Colors.grey.withOpacity(0.05),
+                          splashColor: Colors.blueGrey.withValues(alpha: 0.1),
+                          highlightColor: Colors.grey.withValues(alpha: 0.05),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16.0,
@@ -147,7 +147,7 @@ class _AllSightingsScreenState extends State<AllSightingsScreen> {
                               boxShadow: [
                                 if (index == 0)
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withValues(alpha: 0.05),
                                     offset: const Offset(0, 1),
                                     blurRadius: 2.0,
                                   ),

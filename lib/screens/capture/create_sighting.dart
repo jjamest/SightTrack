@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart' as geo;
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/Sighting.dart';
 import 'package:sighttrack/models/User.dart';
 import 'package:sighttrack/models/UserSettings.dart';
+import 'package:sighttrack/screens/capture/map_picker.dart';
 import 'package:sighttrack/util.dart';
 
 class CreateSightingScreen extends StatefulWidget {
@@ -135,6 +135,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
     if (pickedDate == null) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
+      // ignore: use_build_context_synchronously
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
     );
@@ -154,26 +155,40 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
   Future<void> _saveSighting() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Temporary: Clear and resync DataStore to ensure schema is updated
-        await Amplify.DataStore.clear();
-        await Amplify.DataStore.start();
-        Log.i('DataStore cleared and restarted to sync schema');
-
+        // Get the current authenticated user
         final authUser = await Amplify.Auth.getCurrentUser();
         final userId = authUser.userId;
-        Log.i('Current user ID: $userId');
 
+        // Search DataStore for the user based on Cognito id
         final users = await Amplify.DataStore.query(
           User.classType,
           where: User.ID.eq(userId),
         );
 
+        User currentUser;
         if (users.isEmpty) {
-          throw Exception('User not found in DataStore');
-        }
-        User currentUser = users.first;
-        Log.i('Found existing user: ${currentUser.id}');
+          // User not found, create a new one (For good practice, shouldn't have to be run)
+          final userAttributes = await Amplify.Auth.fetchUserAttributes();
+          final emailAttribute = userAttributes.firstWhere(
+            (attr) => attr.userAttributeKey.toString() == 'email',
+            orElse: () => throw Exception('Email not found in user attributes'),
+          );
+          final email = emailAttribute.value;
 
+          currentUser = User(
+            id: userId,
+            display_username: email,
+            email: email,
+            // Optional fields are defaulted to null
+          );
+          await Amplify.DataStore.save(currentUser);
+          Log.i('Created new user: ${currentUser.id}');
+        } else {
+          currentUser = users.first;
+          Log.i('Found existing user: ${currentUser.id}');
+        }
+
+        // Proceed with saving the sighting
         final sightingId = UUID.getUUID();
         final fileExtension = widget.imagePath.split('.').last;
         final s3Key = 'photos/$sightingId.$fileExtension';
@@ -217,9 +232,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         );
 
         await Amplify.DataStore.save(sighting);
-        Log.i(
-          'Sighting saved. ID: $sightingId | Image Path: $s3Key | Species: ${_selectedSpecies!} | Description: ${_descriptionController.text} | DateTime: ${_selectedDateTime.toIso8601String()} | True Location: ${_selectedLocation!.latitude}, ${_selectedLocation!.longitude} | Display Location: ${displayLat ?? 'N/A'}, ${displayLng ?? 'N/A'} | User: ${currentUser.id}',
-        );
+        Log.i('Sighting saved. ID: $sightingId');
 
         if (!mounted) return;
         Navigator.popUntil(context, (route) => route.isFirst);
@@ -247,7 +260,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         'New location from picker: ${newLocation.latitude}, ${newLocation.longitude}',
       );
       setState(() {
-        _selectedLocation = newLocation; // Always true location
+        _selectedLocation = newLocation;
       });
     } else {
       Log.w('No new location returned from picker');
@@ -576,149 +589,11 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
                     ),
                   ],
                 ),
+                SizedBox(height: 80),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class MapPickerScreen extends StatefulWidget {
-  final geo.Position? initialPosition;
-
-  const MapPickerScreen({super.key, this.initialPosition});
-
-  @override
-  State<MapPickerScreen> createState() => _MapPickerScreenState();
-}
-
-class _MapPickerScreenState extends State<MapPickerScreen> {
-  MapboxMap? _mapboxMap;
-  geo.Position? _selectedPosition;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedPosition = widget.initialPosition;
-    Log.i(
-      'MapPickerScreen init with initial: ${_selectedPosition?.latitude}, ${_selectedPosition?.longitude}',
-    );
-  }
-
-  void _onMapCreated(MapboxMap mapboxMap) async {
-    _mapboxMap = mapboxMap;
-
-    await _mapboxMap!.logo.updateSettings(LogoSettings(enabled: false));
-    await _mapboxMap!.attribution.updateSettings(
-      AttributionSettings(enabled: false),
-    );
-    await _mapboxMap!.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-
-    await _mapboxMap!.location.updateSettings(
-      LocationComponentSettings(
-        enabled: true,
-        pulsingEnabled: true,
-        puckBearingEnabled: true,
-      ),
-    );
-
-    if (_selectedPosition != null) {
-      await _mapboxMap!.setCamera(
-        CameraOptions(
-          center: Point(
-            coordinates: Position(
-              _selectedPosition!.longitude,
-              _selectedPosition!.latitude,
-            ),
-          ),
-          zoom: 15.0,
-        ),
-      );
-      Log.i(
-        'Camera set to: ${_selectedPosition!.latitude}, ${_selectedPosition!.longitude}',
-      );
-    }
-  }
-
-  void _onCameraChange(CameraChangedEventData eventData) async {
-    if (_mapboxMap != null) {
-      final cameraState = await _mapboxMap!.getCameraState();
-      setState(() {
-        _selectedPosition = geo.Position(
-          longitude: cameraState.center.coordinates.lng as double,
-          latitude: cameraState.center.coordinates.lat as double,
-          timestamp: DateTime.now(),
-          accuracy: 0.0,
-          altitude: 0.0,
-          heading: 0.0,
-          speed: 0.0,
-          speedAccuracy: 0.0,
-          altitudeAccuracy: 0.0,
-          headingAccuracy: 0.0,
-        );
-        Log.i(
-          'Camera changed, new position: ${_selectedPosition!.latitude}, ${_selectedPosition!.longitude}',
-        );
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Location'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          MapWidget(
-            styleUri: 'mapbox://styles/jamestt/cm8c8inqm004b01rxat34g28r',
-            onMapCreated: _onMapCreated,
-            onCameraChangeListener: _onCameraChange,
-            cameraOptions: CameraOptions(
-              center: Point(
-                coordinates: Position(
-                  _selectedPosition?.longitude ?? -122.4194,
-                  _selectedPosition?.latitude ?? 37.7749,
-                ),
-              ),
-              zoom: 15.0,
-            ),
-          ),
-          const Center(
-            child: Icon(Icons.location_pin, color: Colors.red, size: 40),
-          ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: ElevatedButton(
-              onPressed: () {
-                Log.i(
-                  'Confirm pressed, returning: ${_selectedPosition?.latitude}, ${_selectedPosition?.longitude}',
-                );
-                Navigator.pop(context, _selectedPosition);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.greenAccent,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Confirm Location',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

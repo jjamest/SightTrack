@@ -8,6 +8,8 @@ import 'package:sighttrack/models/ModelProvider.dart';
 import 'package:sighttrack/screens/home/view_sighting.dart';
 
 class AnnotationClickListener extends OnCircleAnnotationClickListener {
+  /// Callback function to handle annotation click events
+
   final void Function(CircleAnnotation) onAnnotationClick;
 
   AnnotationClickListener({required this.onAnnotationClick});
@@ -91,7 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
       options.add(
         CircleAnnotationOptions(
           geometry: Point(
-            coordinates: Position(sighting.longitude, sighting.latitude),
+            coordinates: Position(
+              // Prioritize the display coordinates, and if none is set, then show the actual
+              sighting.displayLongitude ?? sighting.longitude,
+              sighting.displayLatitude ?? sighting.latitude,
+            ),
           ),
           circleRadius: 10,
           circleColor: Color.fromARGB(255, 255, 234, 0).toARGB32(),

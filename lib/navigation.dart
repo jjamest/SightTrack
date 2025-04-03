@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:sighttrack/screens/capture/capture.dart';
+import 'package:sighttrack/screens/capture/capture_type.dart';
 import 'package:sighttrack/screens/home/all_sightings.dart';
 import 'package:sighttrack/screens/home/home.dart';
 import 'package:sighttrack/screens/profile/profile.dart';
@@ -11,7 +12,7 @@ class Navigation extends StatelessWidget {
   const Navigation({super.key});
 
   List<Widget> _buildScreens() {
-    return [HomeScreen(), CaptureScreen(), ProfileScreen()];
+    return [HomeScreen(), CaptureTypeScreen(), ProfileScreen()];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -53,7 +54,11 @@ class Navigation extends StatelessWidget {
         activeColorPrimary: Colors.teal.shade400,
         inactiveColorPrimary: Colors.teal.shade500,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/capture',
+          initialRoute: '/captureType',
+          routes: {
+            '/info': (final context) => const CaptureTypeInfoScreen(),
+            '/capture': (final context) => const CaptureScreen(),
+          },
         ),
         activeColorSecondary: Colors.white,
         inactiveColorSecondary: Colors.white,

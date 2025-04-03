@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,11 +25,24 @@ class CaptureScreenState extends State<CaptureScreen> {
   bool _isCameraInitialized = false;
   String? _errorMessage;
   bool _isCapturePressed = false;
+  late String _currentTime;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    _currentTime = DateTime.now().toString().split('.')[0];
+    _startTimer();
     _initializeCamera();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime =
+            DateTime.now().toString().split('.')[0]; // Update timestamp
+      });
+    });
   }
 
   Future<void> _initializeCamera() async {
@@ -181,6 +196,7 @@ class CaptureScreenState extends State<CaptureScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller?.dispose();
     super.dispose();
   }
@@ -409,29 +425,50 @@ class CaptureScreenState extends State<CaptureScreen> {
               ),
             ),
 
+          Positioned(
+            top: 40,
+            left: 20,
+            child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+            ),
+          ),
+
           // Timestamp overlay (top-left, placeholder)
           if (_isCameraInitialized && _errorMessage == null)
-            Positioned(
-              top: 40,
-              left: 20,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Text(
-                  DateTime.now().toString().split('.')[0],
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Positioned(
+                      top: 55,
+                      left:
+                          (constraints.maxWidth - 150) /
+                          2, // Adjust 150 to your Container's width
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text(
+                          _currentTime,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
         ],
       ),

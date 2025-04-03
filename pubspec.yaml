@@ -30,6 +30,7 @@ dependencies:
   camera: ^0.11.1
   permission_handler: ^11.4.0
   flutter_launcher_icons: ^0.14.3
+  animated_background: ^2.0.0
 
 dev_dependencies:
   flutter_test:
