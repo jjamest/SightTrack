@@ -102,7 +102,7 @@ class Navigation extends StatelessWidget {
           screenTransitionAnimationType: ScreenTransitionAnimationType.fadeIn,
         ),
       ),
-      navBarStyle: NavBarStyle.style15, // Style 15 for centered custom button
+      navBarStyle: NavBarStyle.style15,
     );
   }
 }

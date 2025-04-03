@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sighttrack/logging.dart';
 import 'dart:io';
 
-import 'package:sighttrack/screens/capture/create_sighting.dart'; // For File in PhotoPreviewScreen
+import 'package:sighttrack/screens/capture/create_sighting.dart';
 
 class CaptureScreen extends StatefulWidget {
   const CaptureScreen({super.key});
@@ -17,12 +17,12 @@ class CaptureScreenState extends State<CaptureScreen> {
   CameraController? _controller;
   late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
-  int _selectedCameraIndex = 0; // 0 for back camera, 1 for front
-  FlashMode _flashMode = FlashMode.off; // Default flash mode
-  bool _hasFlash = true; // Track if the current camera supports flash
-  bool _isCameraInitialized = false; // Track initialization state
-  String? _errorMessage; // Store error message if initialization fails
-  bool _isCapturePressed = false; // Add this line
+  int _selectedCameraIndex = 0;
+  FlashMode _flashMode = FlashMode.off;
+  bool _hasFlash = true;
+  bool _isCameraInitialized = false;
+  String? _errorMessage;
+  bool _isCapturePressed = false;
 
   @override
   void initState() {
@@ -449,12 +449,11 @@ class PhotoPreviewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
-        fit: StackFit.expand, // Ensure the stack fills the entire screen
+        fit: StackFit.expand,
         children: [
-          // Display the captured image
           Image.file(
             File(imagePath),
-            fit: BoxFit.cover, // Fill the area, cropping if needed
+            fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
             errorBuilder: (context, error, stackTrace) {
@@ -475,16 +474,13 @@ class PhotoPreviewScreen extends StatelessWidget {
           ),
           // Back button
           Positioned(
-            top:
-                MediaQuery.of(context).padding.top +
-                10, // Offset by status bar height + extra padding
+            top: MediaQuery.of(context).padding.top + 10,
             left: 20,
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          // Send/Share button
           Positioned(
             bottom: 30,
             right: 20,

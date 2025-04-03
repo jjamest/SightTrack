@@ -59,7 +59,6 @@ class _SightTrackButtonState extends State<SightTrackButton>
   @override
   void didUpdateWidget(covariant SightTrackButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If loading state changes, simply reset to full scale.
     if (widget.loading != oldWidget.loading && !widget.loading) {
       _controller.animateTo(1.0, duration: widget.animationDuration);
     }
@@ -73,12 +72,11 @@ class _SightTrackButtonState extends State<SightTrackButton>
 
   @override
   Widget build(BuildContext context) {
-    // Default gradient if none provided.
     final Gradient gradient =
         widget.gradient ??
         const LinearGradient(colors: [Colors.teal, Colors.green]);
 
-    // Default text style if none provided.
+    // Default text style if none provided
     final TextStyle style =
         widget.textStyle ??
         TextStyle(

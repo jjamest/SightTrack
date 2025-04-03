@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:sighttrack/models/User.dart';
+import 'package:sighttrack/models/UserSettings.dart';
 import 'package:sighttrack/screens/profile/profile.dart';
 import 'package:sighttrack/screens/profile/profile_picture.dart';
 import 'package:sighttrack/widgets/button.dart';
@@ -51,9 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               user: user!,
             ),
       ),
-    ).then((_) {
-      fetchCurrentUser();
-    });
+    ).then((_) => fetchCurrentUser());
   }
 
   void _navigateToChangeProfilePicture() {
@@ -63,9 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       MaterialPageRoute(
         builder: (context) => ChangeProfilePictureScreen(user: user!),
       ),
-    ).then((_) {
-      fetchCurrentUser();
-    });
+    ).then((_) => fetchCurrentUser());
   }
 
   @override
@@ -77,152 +74,172 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Settings'),
+        elevation: 0,
+        backgroundColor: Colors.grey[100],
+      ),
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : user == null
-              ? const Center(child: Text('No profile found.'))
+              ? const Center(child: Text('No profile found'))
               : ListView(
+                padding: const EdgeInsets.all(16),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                    child: Text(
-                      'Profile Settings',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading:
-                        (user!.profilePicture != null &&
-                                user!.profilePicture!.isNotEmpty)
-                            ? FutureBuilder<String?>(
-                              future: ProfileScreen.loadProfilePicture(
-                                user!.profilePicture!,
-                              ),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError ||
-                                    !snapshot.hasData) {
-                                  return CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey,
-                                    child: const Icon(
-                                      Icons.person,
-                                      size: 25,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                } else {
-                                  return CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: NetworkImage(
-                                      snapshot.data!,
-                                    ),
-                                  );
-                                }
-                              },
-                            )
-                            : CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.grey,
-                              child: const Icon(
-                                Icons.person,
-                                size: 25,
-                                color: Colors.white,
-                              ),
-                            ),
-                    title: const Text('Profile Picture'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _navigateToChangeProfilePicture,
-                  ),
-                  const Divider(indent: 16, endIndent: 16),
-                  ListTile(
-                    title: const Text('Username'),
-                    subtitle: Text(user!.display_username),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        () => _navigateToEditPage(
-                          'Username',
-                          user!.display_username,
-                        ),
-                  ),
-                  const Divider(indent: 16, endIndent: 16),
-                  ListTile(
-                    title: const Text('Email'),
-                    subtitle: Text(user!.email),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _navigateToEditPage('Email', user!.email),
-                  ),
-                  const Divider(indent: 16, endIndent: 16),
-                  ListTile(
-                    title: const Text('Country'),
-                    subtitle: Text(
-                      user!.country != null && user!.country!.isNotEmpty
-                          ? user!.country!
-                          : 'Not set',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _navigateToEditPage('Country', user!.country),
-                  ),
-                  const Divider(indent: 16, endIndent: 16),
-                  ListTile(
-                    title: const Text('Bio'),
-                    subtitle: Text(
-                      user!.bio != null && user!.bio!.isNotEmpty
-                          ? user!.bio!
-                          : 'Not set',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _navigateToEditPage('Bio', user!.bio),
-                  ),
-                  const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: Text(
-                      'App Settings',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Notifications'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => const NotificationsSettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(indent: 16, endIndent: 16),
-                  ListTile(
-                    title: const Text('Privacy'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PrivacySettingsPage(),
-                        ),
-                      );
-                    },
-                  ),
+                  _buildSectionTitle('Profile'),
+                  _buildProfileCard(),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Settings'),
+                  _buildSettingsCard(),
                 ],
               ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[600],
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        children: [
+          _buildProfileItem(
+            title: 'Profile Picture',
+            leading: _buildProfilePicture(),
+            onTap: _navigateToChangeProfilePicture,
+          ),
+          _buildDivider(),
+          _buildProfileItem(
+            title: 'Username',
+            subtitle: user!.display_username,
+            onTap:
+                () => _navigateToEditPage('Username', user!.display_username),
+          ),
+          _buildDivider(),
+          _buildProfileItem(
+            title: 'Email',
+            subtitle: user!.email,
+            onTap: () => _navigateToEditPage('Email', user!.email),
+          ),
+          _buildDivider(),
+          _buildProfileItem(
+            title: 'Country',
+            subtitle: user!.country ?? 'Not set',
+            onTap: () => _navigateToEditPage('Country', user!.country),
+          ),
+          _buildDivider(),
+          _buildProfileItem(
+            title: 'Bio',
+            subtitle: user!.bio ?? 'Not set',
+            onTap: () => _navigateToEditPage('Bio', user!.bio),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        children: [
+          _buildProfileItem(
+            title: 'Privacy',
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PrivacySettingsPage(),
+                  ),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileItem({
+    required String title,
+    String? subtitle,
+    Widget? leading,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: leading,
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      subtitle:
+          subtitle != null
+              ? Text(
+                subtitle,
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+              : null,
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+      onTap: onTap,
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    );
+  }
+
+  Widget _buildProfilePicture() {
+    return (user!.profilePicture != null && user!.profilePicture!.isNotEmpty)
+        ? FutureBuilder<String?>(
+          future: ProfileScreen.loadProfilePicture(user!.profilePicture!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              );
+            }
+            return CircleAvatar(
+              radius: 20,
+              backgroundImage:
+                  snapshot.hasData ? NetworkImage(snapshot.data!) : null,
+              backgroundColor: Colors.grey[300],
+              child:
+                  snapshot.hasError || !snapshot.hasData
+                      ? const Icon(Icons.person, color: Colors.white)
+                      : null,
+            );
+          },
+        )
+        : CircleAvatar(
+          radius: 20,
+          backgroundColor: Colors.grey[300],
+          child: const Icon(Icons.person, color: Colors.white),
+        );
+  }
+
+  Widget _buildDivider() {
+    return Divider(
+      height: 1,
+      indent: 16,
+      endIndent: 16,
+      color: Colors.grey[200],
     );
   }
 }
@@ -262,9 +279,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
 
   Future<void> _saveField() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isSaving = true;
-      });
+      setState(() => isSaving = true);
       try {
         final newValue = _controller.text.trim();
         User updatedUser;
@@ -283,23 +298,22 @@ class _EditFieldPageState extends State<EditFieldPage> {
             break;
           default:
             updatedUser = widget.user;
-            break;
         }
         await Amplify.DataStore.save(updatedUser);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Updated!')));
-        Navigator.of(context).pop();
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error updating field: $e')));
-      } finally {
         if (mounted) {
-          setState(() {
-            isSaving = false;
-          });
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Updated')));
+          Navigator.pop(context);
         }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) setState(() => isSaving = false);
       }
     }
   }
@@ -307,10 +321,14 @@ class _EditFieldPageState extends State<EditFieldPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit ${widget.field}')),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: Text('Edit ${widget.field}'),
+        elevation: 0,
+        backgroundColor: Colors.grey[100],
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
@@ -318,8 +336,17 @@ class _EditFieldPageState extends State<EditFieldPage> {
               TextFormField(
                 controller: _controller,
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
                   labelText: widget.field,
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 validator: (value) {
                   if (widget.field == 'Username' || widget.field == 'Email') {
@@ -336,7 +363,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               SightTrackButton(
                 text: 'Save',
                 onPressed: isSaving ? null : _saveField,
@@ -351,28 +378,153 @@ class _EditFieldPageState extends State<EditFieldPage> {
   }
 }
 
-class NotificationsSettingsPage extends StatelessWidget {
-  const NotificationsSettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
-      backgroundColor: Colors.white,
-      body: const Center(child: Text('Notifications settings go here.')),
-    );
-  }
-}
-
-class PrivacySettingsPage extends StatelessWidget {
+class PrivacySettingsPage extends StatefulWidget {
   const PrivacySettingsPage({super.key});
 
   @override
+  State<PrivacySettingsPage> createState() => _PrivacySettingsPageState();
+}
+
+class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
+  bool? _locationOffset;
+  User? _currentUser;
+  UserSettings? _userSettings;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final currentUser = await Amplify.Auth.getCurrentUser();
+      final userId = currentUser.userId;
+
+      final users = await Amplify.DataStore.query(
+        User.classType,
+        where: User.ID.eq(userId),
+      );
+
+      if (users.isEmpty) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final user = users.first;
+      final settings = await Amplify.DataStore.query(
+        UserSettings.classType,
+        where: UserSettings.USERID.eq(userId),
+      );
+
+      setState(() {
+        _currentUser = user;
+        _userSettings = settings.isNotEmpty ? settings.first : null;
+        _locationOffset =
+            _userSettings?.locationOffset ?? false; // Default to false if null
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
+    }
+  }
+
+  Future<void> _updateLocationOffset(bool value) async {
+    if (_currentUser == null) return;
+
+    try {
+      UserSettings updatedSettings;
+      if (_userSettings == null) {
+        // Create new settings if none exists
+        updatedSettings = UserSettings(
+          userId: _currentUser!.id,
+          locationOffset: value,
+        );
+        await Amplify.DataStore.save(updatedSettings);
+        // Link to User
+        final updatedUser = _currentUser!.copyWith(settings: updatedSettings);
+        await Amplify.DataStore.save(updatedUser);
+      } else {
+        // Update existing settings
+        updatedSettings = _userSettings!.copyWith(locationOffset: value);
+        await Amplify.DataStore.save(updatedSettings);
+      }
+
+      setState(() {
+        _locationOffset = value;
+        _userSettings = updatedSettings;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating setting: $e')));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Privacy')),
-      backgroundColor: Colors.white,
-      body: const Center(child: Text('Privacy settings go here.')),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Privacy'),
+        elevation: 0,
+        backgroundColor: Colors.grey[100],
+      ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _buildSectionTitle('Location'),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SwitchListTile(
+                      title: const Text(
+                        'Location Offset',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Enable to offset your location data for better privacy',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                      value: _locationOffset ?? false,
+                      onChanged: (value) => _updateLocationOffset(value),
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[600],
+          letterSpacing: 0.5,
+        ),
+      ),
     );
   }
 }

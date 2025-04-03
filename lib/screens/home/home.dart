@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
@@ -95,14 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
             coordinates: Position(sighting.longitude, sighting.latitude),
           ),
           circleRadius: 10,
-          circleColor:
-              Color.fromARGB(
-                255,
-                Random().nextInt(256),
-                Random().nextInt(256),
-                Random().nextInt(256),
-              ).toARGB32(),
-          circleBlur: 0.5,
+          circleColor: Color.fromARGB(255, 255, 234, 0).toARGB32(),
+          circleBlur: 1,
         ),
       );
     }

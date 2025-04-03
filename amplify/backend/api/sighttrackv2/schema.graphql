@@ -6,6 +6,13 @@ type User @model @auth(rules: [{allow: private}]) {
   bio: String
   country: String
   sightings: [Sighting] @hasMany
+  settings: UserSettings @hasOne
+}
+
+type UserSettings @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  userId: ID! # Foreign key to User
+  locationOffset: Boolean
 }
 
 type Sighting @model @auth(rules: [{allow: private}]) {
@@ -14,6 +21,8 @@ type Sighting @model @auth(rules: [{allow: private}]) {
   photo: String!
   latitude: Float!
   longitude: Float!
+  displayLatitude: Float
+  displayLongitude: Float
   timestamp: AWSDateTime!
   description: String
   user: User @belongsTo

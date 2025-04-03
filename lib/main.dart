@@ -27,7 +27,8 @@ Future<void> main() async {
     ]);
 
     await Amplify.configure(amplifyconfig);
-    await Amplify.DataStore.start(); // Start sync once at app launch
+    await Amplify.DataStore.clear();
+    await Amplify.DataStore.start();
 
     // Add a global DataStore subscription to debug sync events
     Amplify.DataStore.observe(User.classType).listen((event) {

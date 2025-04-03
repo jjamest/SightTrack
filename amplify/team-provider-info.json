@@ -14,7 +14,8 @@
     },
     "categories": {
       "auth": {
-        "sighttrackv28644ebea": {}
+        "sighttrackv28644ebea": {},
+        "userPoolGroups": {}
       },
       "storage": {
         "StorageResource": {}

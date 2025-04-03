@@ -22,15 +22,17 @@
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'Sighting.dart';
 import 'User.dart';
+import 'UserSettings.dart';
 
 export 'Sighting.dart';
 export 'User.dart';
+export 'UserSettings.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "395b327f640a5bdb3793ebeb11c07bb2";
+  String version = "81bd48d7e05c11a792d431a66b657146";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Sighting.schema, User.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Sighting.schema, User.schema, UserSettings.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -43,6 +45,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Sighting.classType;
       case "User":
         return User.classType;
+      case "UserSettings":
+        return UserSettings.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
+import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/User.dart';
+import 'package:sighttrack/util.dart';
 import 'package:sighttrack/widgets/button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,17 +15,22 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 
   static Future<String> loadProfilePicture(String path) async {
-    final result =
-        await Amplify.Storage.getUrl(
-          path: StoragePath.fromString(path),
-          options: const StorageGetUrlOptions(
-            pluginOptions: S3GetUrlPluginOptions(
-              validateObjectExistence: true,
-              expiresIn: Duration(hours: 2),
+    try {
+      final result =
+          await Amplify.Storage.getUrl(
+            path: StoragePath.fromString(path),
+            options: const StorageGetUrlOptions(
+              pluginOptions: S3GetUrlPluginOptions(
+                validateObjectExistence: true,
+                expiresIn: Duration(hours: 2),
+              ),
             ),
-          ),
-        ).result;
-    return result.url.toString();
+          ).result;
+      return result.url.toString();
+    } catch (e) {
+      Log.e('Error loading profile picture: $e');
+      rethrow;
+    }
   }
 }
 
@@ -32,14 +39,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? cognitoUsername;
   bool isLoading = true;
   late StreamSubscription subscription;
+  Future<String?>? _profilePictureFuture;
 
   Future<void> fetchCurrentUser() async {
     try {
-      // Get the current authenticated user.
       final currentUser = await Amplify.Auth.getCurrentUser();
       final userId = currentUser.userId;
 
-      // Query DataStore for the current user record.
       final users = await Amplify.DataStore.query(
         User.classType,
         where: User.ID.eq(userId),
@@ -48,15 +54,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         if (users.isNotEmpty) {
           userDatastore = users.first;
+          if (userDatastore!.profilePicture != null &&
+              userDatastore!.profilePicture!.isNotEmpty) {
+            _profilePictureFuture = ProfileScreen.loadProfilePicture(
+              userDatastore!.profilePicture!,
+            );
+          }
         }
         isLoading = false;
-        cognitoUsername = currentUser.username; // Store the username
+        cognitoUsername = currentUser.username;
       });
     } catch (e) {
-      // Optionally log or handle errors here.
       setState(() {
         isLoading = false;
       });
+      Log.e('Error fetching user: $e');
     }
   }
 
@@ -64,10 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     fetchCurrentUser();
-
-    // Subscribe to DataStore changes for User.
     subscription = Amplify.DataStore.observe(User.classType).listen((event) {
-      // If the changed record matches the current user, refresh the data.
       if (userDatastore != null && event.item.id == userDatastore!.id) {
         fetchCurrentUser();
       }
@@ -82,204 +91,285 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    try {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.pushNamed(context, '/settings');
-              },
-            ),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        body:
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : userDatastore == null
-                ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        elevation: 1,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, size: 26, color: Colors.grey),
+            padding: const EdgeInsets.all(12),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body:
+          isLoading
+              ? const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                ),
+              )
+              : userDatastore == null
+              ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'No profile found',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  SightTrackButton(
+                    text: 'Logout',
+                    width: 140,
+                    onPressed: () => Amplify.Auth.signOut(),
+                  ),
+                ],
+              )
+              : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28.0,
+                  vertical: 40.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Center(child: Text('No profile found')),
-                    const SizedBox(height: 30),
-                    SightTrackButton(
-                      text: 'Logout',
-                      width: 100,
-                      onPressed: () {
-                        Amplify.Auth.signOut();
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child:
+                          _profilePictureFuture != null
+                              ? FutureBuilder<String?>(
+                                future: _profilePictureFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox(
+                                      height: 120,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 3,
+                                        ),
+                                      ),
+                                    );
+                                  } else if (snapshot.hasError ||
+                                      !snapshot.hasData) {
+                                    return const CircleAvatar(
+                                      radius: 60,
+                                      backgroundColor: Colors.grey,
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 48,
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  } else {
+                                    return CircleAvatar(
+                                      radius: 60,
+                                      backgroundImage: NetworkImage(
+                                        snapshot.data!,
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
+                              : const CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 48,
+                                  color: Colors.white,
+                                ),
+                              ),
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      cognitoUsername ?? '',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      userDatastore!.display_username,
+                      style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    FutureBuilder<bool>(
+                      future: Util.isAdmin(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.grey,
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasData && snapshot.data == true) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'Admin User',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
                       },
                     ),
-                  ],
-                )
-                : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      (userDatastore!.profilePicture != null &&
-                              userDatastore!.profilePicture!.isNotEmpty)
-                          ? FutureBuilder<String?>(
-                            future: ProfileScreen.loadProfilePicture(
-                              userDatastore!.profilePicture!,
-                            ),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else if (snapshot.hasError ||
-                                  !snapshot.hasData) {
-                                return CircleAvatar(
-                                  radius: 70,
-                                  backgroundColor: Colors.grey,
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 70,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              } else {
-                                return CircleAvatar(
-                                  radius: 70,
-                                  backgroundImage: NetworkImage(snapshot.data!),
-                                );
-                              }
-                            },
-                          )
-                          : CircleAvatar(
-                            radius: 70,
-                            backgroundColor: Colors.grey,
-                            child: const Icon(
-                              Icons.person,
-                              size: 70,
-                              color: Colors.white,
-                            ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.email, size: 22, color: Colors.grey),
+                        const SizedBox(width: 12),
+                        Text(
+                          userDatastore!.email,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400,
                           ),
-                      const SizedBox(height: 20),
-                      // Cognito Username display
-                      Text(
-                        cognitoUsername!,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.pin_drop,
+                          size: 22,
                           color: Colors.grey,
                         ),
-                      ),
-                      // Display username
-                      Text(
-                        userDatastore!.display_username,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(width: 12),
+                        Text(
+                          userDatastore!.country!.isNotEmpty
+                              ? userDatastore!.country!
+                              : 'Location not set',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const SizedBox(height: 12),
-                      // Email with icon
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.email, size: 20, color: Colors.grey),
-                          const SizedBox(width: 8),
-                          Text(
-                            userDatastore!.email,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.pin_drop, color: Colors.grey),
-                          const SizedBox(width: 8),
-                          Text(
-                            userDatastore!.country!.isNotEmpty
-                                ? userDatastore!.country!
-                                : 'Location not set',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
+                      child: Text(
                         userDatastore!.bio!.isNotEmpty
                             ? userDatastore!.bio!
                             : 'No bio',
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                          height: 1.6,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 100),
-                      SightTrackButton(
-                        text: 'Logout',
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Logout'),
-                                content: Text('Are you sure?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Cancel'),
+                    ),
+                    const SizedBox(height: 48),
+                    SightTrackButton(
+                      text: 'Logout',
+                      width: 140,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              title: const Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              content: const Text(
+                                'Are you sure you want to log out?',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Amplify.Auth.signOut();
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Logout'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Amplify.Auth.signOut();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Logout',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        width: 100,
-                      ),
-                    ],
-                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
-      );
-    } catch (e) {
-      return SightTrackButton(
-        text: 'Logout',
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Logout'),
-                content: Text('Are you sure?'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Amplify.Auth.signOut();
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Logout'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        width: 100,
-      );
-    }
+              ),
+    );
   }
 }

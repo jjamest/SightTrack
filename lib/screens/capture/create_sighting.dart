@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/Sighting.dart';
 import 'package:sighttrack/models/User.dart';
+import 'package:sighttrack/models/UserSettings.dart';
+import 'package:sighttrack/util.dart';
 
 class CreateSightingScreen extends StatefulWidget {
   final String imagePath;
@@ -26,6 +29,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
   geo.Position? _selectedLocation;
   String? _selectedSpecies;
   List<String>? identifiedSpecies;
+  UserSettings? _userSettings;
 
   @override
   void initState() {
@@ -42,6 +46,11 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         _selectedSpecies = temp[0];
       });
     }
+
+    final fetchSettings = await Util.getUserSettings();
+    setState(() {
+      _userSettings = fetchSettings;
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -60,15 +69,11 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
 
   Future<List<String>>? _invokeLambdaForSpecies(String imagePath) async {
     try {
-      // Read the image file as bytes
       final imageFile = File(imagePath);
       final imageBytes = await imageFile.readAsBytes();
-
-      // Optionally encode as base64 (simpler for JSON payloads)
       final base64Image = base64Encode(imageBytes);
       final requestBody = jsonEncode({'image': base64Image});
 
-      // Send POST request with image data
       final response =
           await Amplify.API
               .post(
@@ -114,7 +119,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
     }
 
     return await geo.Geolocator.getCurrentPosition(
-      locationSettings: geo.LocationSettings(
+      locationSettings: const geo.LocationSettings(
         accuracy: geo.LocationAccuracy.best,
       ),
     );
@@ -130,7 +135,6 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
     if (pickedDate == null) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
-      // ignore: use_build_context_synchronously
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
     );
@@ -150,12 +154,15 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
   Future<void> _saveSighting() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Get the current authenticated user
+        // Temporary: Clear and resync DataStore to ensure schema is updated
+        await Amplify.DataStore.clear();
+        await Amplify.DataStore.start();
+        Log.i('DataStore cleared and restarted to sync schema');
+
         final authUser = await Amplify.Auth.getCurrentUser();
-        final userId = authUser.userId; // Cognito User ID
+        final userId = authUser.userId;
         Log.i('Current user ID: $userId');
 
-        // Query for the User record in DataStore
         final users = await Amplify.DataStore.query(
           User.classType,
           where: User.ID.eq(userId),
@@ -167,37 +174,51 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         User currentUser = users.first;
         Log.i('Found existing user: ${currentUser.id}');
 
-        // Generate a unique ID for the Sighting (this will also be the S3 key)
-        final sightingId = UUID.getUUID(); // Use a UUID generator
-        final fileExtension = widget.imagePath.split('.').last; // e.g., 'jpg'
+        final sightingId = UUID.getUUID();
+        final fileExtension = widget.imagePath.split('.').last;
         final s3Key = 'photos/$sightingId.$fileExtension';
 
-        // Upload the image to S3
-        Amplify.Storage.uploadFile(
+        await Amplify.Storage.uploadFile(
           localFile: AWSFile.fromPath(widget.imagePath),
           path: StoragePath.fromString(s3Key),
           onProgress: (progress) {
             Log.i('Upload progress: ${progress.fractionCompleted}');
           },
-        );
+        ).result;
         Log.i('Image uploaded to S3 with key: $s3Key');
 
-        // Create the Sighting object with the S3 path
+        final settings = await Util.getUserSettings();
+        final shouldOffset = settings?.locationOffset ?? false;
+        double? displayLat;
+        double? displayLng;
+
+        if (shouldOffset) {
+          final random = Random();
+          const offsetRange = 0.001;
+          final latOffset =
+              (random.nextDouble() * offsetRange * 2) - offsetRange;
+          final lngOffset =
+              (random.nextDouble() * offsetRange * 2) - offsetRange;
+          displayLat = _selectedLocation!.latitude + latOffset;
+          displayLng = _selectedLocation!.longitude + lngOffset;
+        }
+
         final sighting = Sighting(
-          id: sightingId, // Explicitly set the ID to match the S3 key
+          id: sightingId,
           species: _selectedSpecies!,
           photo: s3Key,
           latitude: _selectedLocation!.latitude,
           longitude: _selectedLocation!.longitude,
+          displayLatitude: displayLat,
+          displayLongitude: displayLng,
           timestamp: TemporalDateTime(_selectedDateTime),
           description: _descriptionController.text,
           user: currentUser,
         );
 
-        // Save to DataStore
         await Amplify.DataStore.save(sighting);
         Log.i(
-          'Sighting saved. ID: $sightingId | Image Path: $s3Key | Species: ${_selectedSpecies!} | Description: ${_descriptionController.text} | DateTime: ${_selectedDateTime.toIso8601String()} | Location: ${_selectedLocation?.latitude}, ${_selectedLocation?.longitude} | User: ${currentUser.id}',
+          'Sighting saved. ID: $sightingId | Image Path: $s3Key | Species: ${_selectedSpecies!} | Description: ${_descriptionController.text} | DateTime: ${_selectedDateTime.toIso8601String()} | True Location: ${_selectedLocation!.latitude}, ${_selectedLocation!.longitude} | Display Location: ${displayLat ?? 'N/A'}, ${displayLng ?? 'N/A'} | User: ${currentUser.id}',
         );
 
         if (!mounted) return;
@@ -226,7 +247,7 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
         'New location from picker: ${newLocation.latitude}, ${newLocation.longitude}',
       );
       setState(() {
-        _selectedLocation = newLocation;
+        _selectedLocation = newLocation; // Always true location
       });
     } else {
       Log.w('No new location returned from picker');
@@ -235,7 +256,6 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
 
   @override
   void dispose() {
-    // _speciesController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -263,43 +283,71 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
                   onTap: () {
                     showDialog<void>(
                       context: context,
+                      barrierDismissible: true,
                       builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Sighting Photo'),
-                          content: Image.file(
-                            File(widget.imagePath),
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.error,
-                                      color: Colors.red,
-                                      size: 48,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Error loading image',
-                                      style: TextStyle(
+                        return Dialog(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          insetPadding: const EdgeInsets.all(16),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.9,
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * 0.9,
+                            ),
+                            child: Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Image.file(
+                                  File(widget.imagePath),
+                                  fit: BoxFit.contain,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                            size: 48,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Error loading image',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Positioned(
+                                  right: 8,
+                                  top: 8,
+                                  child: GestureDetector(
+                                    onTap: () => Navigator.of(context).pop(),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.black54,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        size: 24,
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              );
-                            },
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('Close'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+                              ],
                             ),
-                          ],
+                          ),
                         );
                       },
                     );
@@ -481,6 +529,13 @@ class _CreateSightingScreenState extends State<CreateSightingScreen> {
                       ],
                     ),
                   ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _userSettings?.locationOffset ?? false
+                      ? 'Location offset is ON'
+                      : 'Location offset is OFF',
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
                 Row(

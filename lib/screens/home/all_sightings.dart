@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sighttrack/logging.dart';
 import 'package:sighttrack/models/Sighting.dart';
 import 'package:sighttrack/screens/home/view_sighting.dart';
 
@@ -12,35 +15,75 @@ class AllSightingsScreen extends StatefulWidget {
 }
 
 class _AllSightingsScreenState extends State<AllSightingsScreen> {
-  late Future<List<Sighting>> _sightingsFuture;
+  List<Sighting> sightings = [];
+  bool isLoading = true;
+  late StreamSubscription _subscription;
 
   @override
   void initState() {
     super.initState();
-    _sightingsFuture = _fetchAllSightings();
+    _fetchAllSightings();
+    _setupSubscription();
   }
 
-  Future<List<Sighting>> _fetchAllSightings() async {
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _fetchAllSightings() async {
     try {
-      final sightings = await Amplify.DataStore.query(Sighting.classType);
-      // Sort by timestamp, most recent first
-      sightings.sort(
-        (a, b) => b.timestamp.getDateTimeInUtc().compareTo(
-          a.timestamp.getDateTimeInUtc(),
-        ),
-      );
-      return sightings;
+      final result = await Amplify.DataStore.query(Sighting.classType);
+      setState(() {
+        sightings =
+            result..sort(
+              (a, b) => b.timestamp.getDateTimeInUtc().compareTo(
+                a.timestamp.getDateTimeInUtc(),
+              ),
+            );
+        isLoading = false;
+      });
     } catch (e) {
-      print('Error fetching sightings: $e');
-      return [];
+      Log.e('Error fetching sightings: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  // Method to handle the refresh action
+  void _setupSubscription() {
+    _subscription = Amplify.DataStore.observe(Sighting.classType).listen((
+      event,
+    ) {
+      if (!mounted) return;
+      setState(() {
+        if (event.eventType == EventType.delete) {
+          sightings.removeWhere((s) => s.id == event.item.id);
+        } else if (event.eventType == EventType.create) {
+          sightings.add(event.item);
+          sightings.sort(
+            (a, b) => b.timestamp.getDateTimeInUtc().compareTo(
+              a.timestamp.getDateTimeInUtc(),
+            ),
+          );
+        } else if (event.eventType == EventType.update) {
+          final index = sightings.indexWhere((s) => s.id == event.item.id);
+          if (index != -1) {
+            sightings[index] = event.item;
+            sightings.sort(
+              (a, b) => b.timestamp.getDateTimeInUtc().compareTo(
+                a.timestamp.getDateTimeInUtc(),
+              ),
+            );
+          }
+        }
+      });
+    }, onError: (e) => Log.e('Error in DataStore subscription: $e'));
+  }
+
   Future<void> _refreshSightings() async {
-    setState(() {
-      _sightingsFuture = _fetchAllSightings(); // Fetch updated data
-    });
+    await _fetchAllSightings();
   }
 
   @override
@@ -56,127 +99,116 @@ class _AllSightingsScreenState extends State<AllSightingsScreen> {
         foregroundColor: Colors.white,
       ),
       body: Container(
-        color: Colors.grey[100], // Subtle light background
-        child: FutureBuilder<List<Sighting>>(
-          future: _sightingsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text(
-                  'No sightings found',
-                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
-                ),
-              );
-            }
-
-            final sightings = snapshot.data!;
-
-            return RefreshIndicator(
-              onRefresh: _refreshSightings, // Trigger refresh when pulled down
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: sightings.length,
-                itemBuilder: (context, index) {
-                  final sighting = sightings[index];
-                  return Material(
-                    color: Colors.white,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    ViewSightingScreen(sighting: sighting),
-                          ),
-                        );
-                      },
-                      splashColor: Colors.blueGrey.withOpacity(0.1),
-                      highlightColor: Colors.grey.withOpacity(0.05),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 12.0,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Colors.grey.shade200,
-                              width: 1.0,
-                            ),
-                          ),
-                          boxShadow: [
-                            if (index == 0) // Subtle shadow on top item
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.05),
-                                offset: const Offset(0, 1),
-                                blurRadius: 2.0,
+        color: Colors.grey[100],
+        child:
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : sightings.isEmpty
+                ? const Center(
+                  child: Text(
+                    'No sightings found',
+                    style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                  ),
+                )
+                : RefreshIndicator(
+                  onRefresh: _refreshSightings,
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: sightings.length,
+                    itemBuilder: (context, index) {
+                      final sighting = sightings[index];
+                      return Material(
+                        color: Colors.white,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        ViewSightingScreen(sighting: sighting),
                               ),
-                          ],
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Species
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                sighting.species,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
+                            );
+                          },
+                          splashColor: Colors.blueGrey.withOpacity(0.1),
+                          highlightColor: Colors.grey.withOpacity(0.05),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 12.0,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade200,
+                                  width: 1.0,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
+                              boxShadow: [
+                                if (index == 0)
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.05),
+                                    offset: const Offset(0, 1),
+                                    blurRadius: 2.0,
+                                  ),
+                              ],
                             ),
-                            // Details
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    sighting.user?.display_username ??
-                                        'Unknown',
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey[700],
-                                      fontWeight: FontWeight.w400,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    sighting.species,
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 2.0),
-                                  Text(
-                                    DateFormat('MMM dd, HH:mm').format(
-                                      sighting.timestamp
-                                          .getDateTimeInUtc()
-                                          .toLocal(),
-                                    ),
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey[600],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        sighting.user?.display_username ??
+                                            'Unknown',
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey[700],
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      Text(
+                                        DateFormat('MMM dd, HH:mm').format(
+                                          sighting.timestamp
+                                              .getDateTimeInUtc()
+                                              .toLocal(),
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.grey[600],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-        ),
+                      );
+                    },
+                  ),
+                ),
       ),
     );
   }
